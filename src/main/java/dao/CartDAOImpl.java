@@ -3,36 +3,39 @@ package dao;
 import model.Cart;
 import util.DBConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class CartDAOImpl  implements  CartDAO
 {
     @Override
     public int createCart(int userId) {
-       String query="Insert into cart(user_d) values(?) ";
-       try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
-       {
-           preparedStatement.setInt(1,userId);
-           int rowsInserted=preparedStatement.executeUpdate();
-           if(rowsInserted>0)
-           {
-               System.out.println("Cart created successfully");
-           }
-           else
-           {
-               System.out.println("Cart creation failed");
-           }
 
+        String query = "INSERT INTO cart(user_id) VALUES(?)";
 
-       }
-       catch (SQLException e)
-       {
-           System.out.println("Error while creating cart for User Id"+userId +"Error Message"+e.getMessage());
-       }
-       return -1;
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+            preparedStatement.setInt(1, userId);
+
+            int rowsInserted = preparedStatement.executeUpdate();
+
+            if (rowsInserted > 0) {
+                ResultSet rs = preparedStatement.getGeneratedKeys();
+
+                if (rs.next()) {
+                    int cartId = rs.getInt(1);
+                    System.out.println("Cart created successfully with ID: " + cartId);
+                    return cartId;
+                }
+            } else {
+                System.out.println("Cart creation failed");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error while creating cart for User Id " + userId + " Error: " + e.getMessage());
+        }
+
+        return -1;
     }
 
     @Override

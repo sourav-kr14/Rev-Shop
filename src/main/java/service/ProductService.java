@@ -17,7 +17,7 @@ public class ProductService
         Product product= new Product(0,name,description,price,mrp,category,stock,sellerId);
         productDAO.addProduct(product);
 
-        System.out.println("Product added successfully");
+//        System.out.println("Product added successfully");
 
     }
 
@@ -57,7 +57,7 @@ public class ProductService
     public void updateProduct(Product product)
     {
         productDAO.updateProduct(product);
-        System.out.println("Product updated successfully");
+
     }
 
     public void updateStock(int productId,int newStock)
@@ -67,7 +67,7 @@ public class ProductService
     public void deleteProduct(int productId)
     {
         productDAO.deleteProduct(productId);
-        System.out.println("Deleted successfully");
+
     }
 
     public void searchProducts(String search)

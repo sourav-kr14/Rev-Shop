@@ -6,6 +6,7 @@ import util.DBConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,45 +32,36 @@ public class OrderService {
             connection=DBConnection.getConnection();
             connection.setAutoCommit(false);
             Cart cart = cartDAO.getCartByUserId(userId);
-
             if (cart == null) {
                 System.out.println("Cart is empty");
                 return;
             }
-
             List<CartItem> cartItemList = cartItemDAO.getCartItems(cart.getCartId());
-
             if (cartItemList.isEmpty()) {
                 System.out.println("Cart is empty");
                 return;
             }
-
             double total = 0;
-
             for (CartItem item : cartItemList) {
                 Product product = productDAO.getProductById(item.getProductId());
                 total += product.getPrice() * item.getQuantity();
             }
-
-
-            Order order = new Order(0, userId, total, "PLACED", new Date());
-
-
+            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now());
             int orderId = orderDAO.placeOrder(order);
-
+            System.out.println("DEBUG Order ID = " + orderId);
+            if (orderId == -1) {
+                connection.rollback();
+                System.out.println("Order failed");
+                return;
+            }
             List<OrderItem> orderItems = new ArrayList<>();
-
             for (CartItem cartItem : cartItemList) {
                 Product product = productDAO.getProductById(cartItem.getProductId());
                 if (product.getStock() < cartItem.getQuantity()) {
                     throw new RuntimeException("Insufficient stock for product  " + product.getProductId());
                 }
-
                 OrderItem orderItem = new OrderItem(0, orderId, cartItem.getProductId(), cartItem.getQuantity(), product.getPrice());
-
                 orderItems.add(orderItem);
-
-
                 int newStock = product.getStock() - cartItem.getQuantity();
                 productDAO.updateStock(product.getProductId(), newStock);
             }
@@ -77,12 +69,16 @@ public class OrderService {
 
             orderItemDAO.addOrderItems(orderItems);
 
-
             cartItemDAO.emptyCart(cart.getCartId());
             connection.commit();
 
             System.out.println("Order placed successfully!");
         } catch (SQLException e) {
+            try{
+                if(connection !=null) connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
 
             System.out.println("Transaction unsuccessfull  " + e.getMessage());
         }

@@ -19,7 +19,7 @@ public class OrderItemDAOImpl implements OrderItemDAO
         String query="Insert into order_items(order_id,product_id,quantity,price) values(?,?,?,?)";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
-            preparedStatement.setInt(1,orderItem.getOrderItemId());
+            preparedStatement.setInt(1,orderItem.getOrderId());
             preparedStatement.setInt(2,orderItem.getProductId());
             preparedStatement.setInt(3,orderItem.getQuantity());
             preparedStatement.setDouble(4,orderItem.getPrice());
@@ -49,7 +49,7 @@ public class OrderItemDAOImpl implements OrderItemDAO
         {
             for(OrderItem item:items)
             {
-                preparedStatement.setInt(1,item.getOrderItemId());
+                preparedStatement.setInt(1,item.getOrderId());
                 preparedStatement.setInt(2,item.getProductId());
                 preparedStatement.setInt(3,item.getQuantity());
                 preparedStatement.setDouble(4,item.getPrice());

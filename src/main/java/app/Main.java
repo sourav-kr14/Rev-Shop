@@ -13,7 +13,7 @@ import java.util.Scanner;
 public class Main
 {
     private static Scanner sc = new Scanner(System.in);
-    static void main() {
+    public static void main() {
         UserDAO userDAO = new UserDAOImpl();
         ProductDAO productDAO = new ProductDAOImpl();
         OrderItemDAO orderItemDAO = new OrderItemDAOImpl();
@@ -35,6 +35,7 @@ public class Main
             int choice = sc.nextInt();
             switch (choice) {
                 case 1: register(userService);
+                break;
                 case 2:User user= login(userService);
                         if(user !=null)
                         {
@@ -50,6 +51,7 @@ public class Main
                         break;
                 case 3:
                     System.out.println("==== Exiting ====");
+                    return;
                 default:
                     System.out.println("Please Enter Correct Choice");
             }
@@ -134,11 +136,10 @@ public class Main
                         break;
                     case 6:
                         orderService.checkout(user.getUserId());
-                        System.out.println("Order Successfully placed");
                         break;
                     case 7:
                         System.out.println("Logging out !!!!");
-                        break;
+                      return;
                     default:
                         System.out.println("Please enter correct choice");
                 }
@@ -156,7 +157,6 @@ public class Main
                System.out.println("4. Update Stock");
                System.out.println("5. Delete Product");
                System.out.println("6. Logout");
-
                System.out.print("Enter choice: ");
                int choice = sc.nextInt();
                switch (choice)
@@ -165,11 +165,16 @@ public class Main
                        System.out.println("Enter product name");
                        String name =sc.next();
                        System.out.println("Enter product description");
+                       sc.nextLine();
                        String desc =sc.next();
                        System.out.println("Enter product price");
-                       Double price =sc.nextDouble();
+                       while (!sc.hasNextDouble()) {
+                           System.out.println("Invalid input! Enter number:");
+                           sc.next();
+                       }
+                       double price =sc.nextDouble();
                        System.out.println("Enter MRP");
-                       Double mrp= sc.nextDouble();
+                       double mrp= sc.nextDouble();
                        System.out.println("Enter category");
                        String category=sc.next();
                        System.out.println("Enter stock");
@@ -194,11 +199,12 @@ public class Main
                            System.out.println("Enter product name");
                            String newName =sc.next();
                            System.out.println("Enter product description");
+                           sc.nextLine();
                            String newDesc =sc.next();
                            System.out.println("Enter product price");
-                           Double newPrice =sc.nextDouble();
+                           double newPrice =sc.nextDouble();
                            System.out.println("Enter MRP");
-                           Double new_mrp= sc.nextDouble();
+                           double new_mrp= sc.nextDouble();
                            System.out.println("Enter category");
                            String newCategory=sc.next();
                            System.out.println("Enter stock");
@@ -221,15 +227,16 @@ public class Main
                        System.out.println("Enter new stock");
                        int stockValue=sc.nextInt();
                        productService.updateStock(pid,stockValue);
-                       System.out.println("Stock Updated");
+
                        break;
                    case 5:
                        System.out.println("Enter product id to delete");
                        int deleteId=sc.nextInt();
                        productService.deleteProduct(deleteId);
-                       return;
+                       break;
                    case 6:
                        System.out.println("Logging out !!");
+                       return;
                    default:
                        System.out.println("Please enter correct choice");
                }

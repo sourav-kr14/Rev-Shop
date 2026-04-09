@@ -11,10 +11,7 @@ public class OrderDAOImpl implements  OrderDAO {
     @Override
     public int placeOrder(Order order)
     {
-        int orderId = 0;
-
         String query = "INSERT INTO orders (user_id, total_amount, status, order_date) VALUES (?, ?, ?, ?)";
-
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
@@ -23,34 +20,35 @@ public class OrderDAOImpl implements  OrderDAO {
             ps.setString(3, order.getStatus());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(order.getOrderDate()));
 
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-
-            if (rs.next())
+            int rowsInserted=ps.executeUpdate();
+            if(rowsInserted>0)
             {
-                orderId = rs.getInt(1);
+                ResultSet rs = ps.getGeneratedKeys();
+                if(rs.next())
+                {
+                    int orderId=rs.getInt(1);
+                    return orderId;
+                }
             }
-
         }
         catch (SQLException e)
         {
             System.out.println("Error placing order " + e.getMessage());
+            e.printStackTrace();
         }
-
-        return orderId;
+        return -1;
     }
 
     @Override
     public List<Order> getOrderByUserId(int userId) {
-        List<Order> user=new ArrayList<>();
+        List<Order> orders=new ArrayList<>();
         String query="Select * from orders where user_id=?";
         try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query)){
             preparedStatement.setInt(1,userId);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next())
             {
-                user.add(extractOrder(resultSet));
+                orders.add(extractOrder(resultSet));
             }
 
 
@@ -59,7 +57,7 @@ public class OrderDAOImpl implements  OrderDAO {
         {
             System.out.println("Error getting user "+e.getMessage());
         }
-        return user;
+        return orders;
 
     }
 
