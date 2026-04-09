@@ -12,7 +12,7 @@ public class CartDAOImpl  implements  CartDAO
 {
     @Override
     public int createCart(int userId) {
-       String query="Insert into carts(userId) values(?) ";
+       String query="Insert into cart(user_d) values(?) ";
        try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
        {
            preparedStatement.setInt(1,userId);
@@ -37,7 +37,7 @@ public class CartDAOImpl  implements  CartDAO
 
     @Override
     public Cart getCartByUserId(int userId) {
-       String query="Select * from carts where userid=?";
+       String query="Select * from cart where user_id=?";
        try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query))
        {
            preparedStatement.setInt(1,userId);
@@ -56,7 +56,7 @@ public class CartDAOImpl  implements  CartDAO
 
     @Override
     public void deleteCart(int cartId) {
-        String query="Delete from carts where cartid=?";
+        String query="Delete from cart where cart_id=?";
         try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query)){
             preparedStatement.setInt(1,cartId);
             preparedStatement.executeUpdate();

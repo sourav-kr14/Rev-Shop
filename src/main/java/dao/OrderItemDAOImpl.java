@@ -77,7 +77,7 @@ public class OrderItemDAOImpl implements OrderItemDAO
     @Override
     public List<OrderItem> getOrderItemsByOrderId(int orderId) {
        List<OrderItem>  items=new ArrayList<>();
-       String query="Select * from order_items where id=?";
+       String query="Select * from order_items where order_id=?";
        try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement = connection.prepareStatement(query))
        {
            preparedStatement.setInt(1,orderId);
@@ -97,7 +97,7 @@ public class OrderItemDAOImpl implements OrderItemDAO
 
     @Override
     public void deleteOrderItemsByOrderId(int orderId) {
-        String query="Delte from order_items where order_id=?";
+        String query="Delete from order_items where order_id=?";
         try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query)){
             preparedStatement.setInt(1,orderId);
             preparedStatement.executeUpdate();
@@ -111,6 +111,6 @@ public class OrderItemDAOImpl implements OrderItemDAO
 
     private OrderItem extractOrder(ResultSet resultSet) throws SQLException
     {
-        return new OrderItem(resultSet.getInt("orderitemid"),resultSet.getInt("orderid"),resultSet.getInt("productid"),resultSet.getInt("quantity"),resultSet.getDouble("price"));
+        return new OrderItem(resultSet.getInt("order_item_id"),resultSet.getInt("order_id"),resultSet.getInt("product_id"),resultSet.getInt("quantity"),resultSet.getDouble("price"));
     }
 }

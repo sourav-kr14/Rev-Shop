@@ -18,7 +18,7 @@ public class CartItemDAOImpl implements CartItemDAO {
             int newQuantity = present.getQuantity() + item.getQuantity();
             updateQuantity(item.getCartId(), item.getProductId(),newQuantity);
         } else {
-            String query = "Insert into cart_items(cart_id,product_id,quantity) values(?,?,?)";
+            String query = "Insert into cartitems(cart_id,product_id,quantity) values(?,?,?)";
             try (Connection connection = DBConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, item.getCartId());
                 preparedStatement.setInt(2, item.getProductId());
@@ -41,7 +41,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     @Override
     public void updateQuantity(int cartId, int productId, int quantity) {
 
-        String query="Update cart_items set quantity=? where cart_id=? and product_id=?";
+        String query="Update cartitems set quantity=? where cart_id=? and product_id=?";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             preparedStatement.setInt(1,quantity);
@@ -65,7 +65,7 @@ public class CartItemDAOImpl implements CartItemDAO {
 
     @Override
     public void removeItems(int cartId, int productId) {
-        String query="Delete from cart_item where cart_id=? and product_id=? ";
+        String query="Delete from cartitems where cart_id=? and product_id=? ";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             preparedStatement.setInt(1,cartId);
@@ -82,7 +82,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     @Override
     public List<CartItem> getCartItems(int cartId) {
       List<CartItem> items=new ArrayList<>();
-      String query="Select * from cart_items where cart_id=?";
+      String query="Select * from cartitems where cart_id=?";
       try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query))
       {
           preparedStatement.setInt(1,cartId);
@@ -105,7 +105,7 @@ public class CartItemDAOImpl implements CartItemDAO {
 
     @Override
     public void emptyCart(int cartId) {
-        String query="Delete from cart_item where cart_id=?  ";
+        String query="Delete from cartitems where cart_id=?  ";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             preparedStatement.setInt(1,cartId);
@@ -123,7 +123,7 @@ public class CartItemDAOImpl implements CartItemDAO {
 
     @Override
     public CartItem getCartItem(int cartId, int productId) {
-        String query = "Select * from cart_items where cart_id=? and product_id=?";
+        String query = "Select * from cartitems where cart_id=? and product_id=?";
         try (Connection connection = DBConnection.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, cartId);
             preparedStatement.setInt(2, productId);

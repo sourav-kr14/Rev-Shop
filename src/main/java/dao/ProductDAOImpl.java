@@ -59,7 +59,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public Product getProductById(int id) {
-       String query="Select * from product where id=?";
+       String query="Select * from product where product_id=?";
        try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query))
        {
            preparedStatement.setInt(1,id);
@@ -80,7 +80,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void updateProduct(Product product) {
-        String sql= "Update product set productname =?,price=?,category=?,stock=? where productid=?";
+        String sql= "Update product set name =?,price=?,category=?,stock=? where product_id=?";
         try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(sql))
         {
           preparedStatement.setString(1,product.getName());

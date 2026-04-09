@@ -44,7 +44,7 @@ public class OrderDAOImpl implements  OrderDAO {
     @Override
     public List<Order> getOrderByUserId(int userId) {
         List<Order> user=new ArrayList<>();
-        String query="Select * from orders where userid=?";
+        String query="Select * from orders where user_id=?";
         try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query)){
             preparedStatement.setInt(1,userId);
             ResultSet resultSet=preparedStatement.executeQuery();
@@ -87,6 +87,6 @@ public class OrderDAOImpl implements  OrderDAO {
 
     private Order extractOrder(ResultSet resultSet) throws SQLException
     {
-        return new Order(resultSet.getInt("orderid"),resultSet.getInt("userid"),resultSet.getDouble("totalamount"),resultSet.getString("status"),resultSet.getTimestamp("orderdate").toLocalDateTime());
+        return new Order(resultSet.getInt("order_id"),resultSet.getInt("user_id"),resultSet.getDouble("total_amount"),resultSet.getString("status"),resultSet.getTimestamp("order_date").toLocalDateTime());
     }
 }
