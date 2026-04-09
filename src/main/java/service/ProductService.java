@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ProductService
 {
-    private ProductDAO productDAO;
+    public ProductDAO productDAO;
     public  ProductService(ProductDAO productDAO)
     {
         this.productDAO=productDAO;
