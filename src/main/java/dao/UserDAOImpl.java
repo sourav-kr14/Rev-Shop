@@ -11,27 +11,31 @@ import java.sql.SQLException;
 public class UserDAOImpl implements  UserDAO{
     @Override
     public boolean register(User user) {
-        String query="Insert into users (email,password,role) values(?,?,?,?) ";
+        String query="Insert into users (email,password,role) values(?,?,?) ";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
 
             preparedStatement.setString(1, user.getEmail());
-            preparedStatement.setString(3,user.getPassword());
-            preparedStatement.setString(4,user.getRole());
+            preparedStatement.setString(2,user.getPassword());
+            preparedStatement.setString(3,user.getRole());
             int rowsInserted=preparedStatement.executeUpdate();
             if(rowsInserted > 0)
             {
                 System.out.println("User registered successfully!!!!!");
+                return true;
             }
             else
             {
                 System.out.println("Something went wrong");
+                return false;
             }
         }
         catch (Exception e)
         {
             System.out.println("Error while registering user"+e.getMessage());
+            return false;
         }
+
     }
 
     @Override
