@@ -59,27 +59,17 @@ public class CartService {
 
     public void removeFromCart(int userId,int productId)
     {
-        Cart cart = cartDAO.getCartByUserId(userId);
-        if(cart == null)
+        Cart cart= cartDAO.getCartByUserId(userId);
+        if(cart==null)
         {
-            System.out.println("Cart is empty");
+            System.out.println("Cart doesn't exist");
             return;
         }
-        cartItemDAO.removeItems(cart.getCartId(),productId);
-        System.out.println("Items removed from cart");
+        cartItemDAO.removeItem(cart.getCartId(),productId);
+
     }
 
-    public void removeFromCart(int userId)
-    {
-        Cart cart = cartDAO.getCartByUserId(userId);
-        if(cart == null)
-        {
-            System.out.println("Cart doesn't  exist");
-            return;
-        }
-        cartItemDAO.emptyCart(cart.getCartId());
-        System.out.println("Cart emptied successfully");
-    }
+
 
 
 

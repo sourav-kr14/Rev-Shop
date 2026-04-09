@@ -13,34 +13,6 @@ import java.util.List;
 
 public class OrderItemDAOImpl implements OrderItemDAO
 {
-
-    @Override
-    public void addOrderItem(OrderItem orderItem) {
-        String query="Insert into order_items(order_id,product_id,quantity,price) values(?,?,?,?)";
-        try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
-        {
-            preparedStatement.setInt(1,orderItem.getOrderId());
-            preparedStatement.setInt(2,orderItem.getProductId());
-            preparedStatement.setInt(3,orderItem.getQuantity());
-            preparedStatement.setDouble(4,orderItem.getPrice());
-            int rowsInserted=preparedStatement.executeUpdate();
-            if(rowsInserted>0)
-            {
-                System.out.println("Single order item inserted");
-            }
-            else
-            {
-                System.out.println("Failed to insert");
-            }
-
-        }
-        catch (SQLException e)
-        {
-            System.out.println("Error "+e.getMessage());
-        }
-
-    }
-
     @Override
     public void addOrderItems(List<OrderItem> items) {
 

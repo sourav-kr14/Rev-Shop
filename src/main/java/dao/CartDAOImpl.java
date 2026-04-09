@@ -56,20 +56,4 @@ public class CartDAOImpl  implements  CartDAO
        }
        return  null;
     }
-
-    @Override
-    public void deleteCart(int cartId) {
-        String query="Delete from cart where cart_id=?";
-        try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query)){
-            preparedStatement.setInt(1,cartId);
-            preparedStatement.executeUpdate();
-
-        }
-        catch (SQLException e)
-        {
-            System.out.println("Error deleting product  "+e.getMessage());
-        }
-
-    }
-
 }

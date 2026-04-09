@@ -11,7 +11,7 @@ public class OrderDAOImpl implements  OrderDAO {
     @Override
     public int placeOrder(Order order)
     {
-        String query = "INSERT INTO orders (user_id, total_amount, status, order_date) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO orders (user_id, total_amount, status, order_date,shipping_address) VALUES (?, ?, ?, ?,?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
@@ -19,6 +19,7 @@ public class OrderDAOImpl implements  OrderDAO {
             ps.setDouble(2, order.getTotalAmount());
             ps.setString(3, order.getStatus());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(order.getOrderDate()));
+            ps.setString(5,order.getShippingAddress());
 
             int rowsInserted=ps.executeUpdate();
             if(rowsInserted>0)
@@ -63,28 +64,24 @@ public class OrderDAOImpl implements  OrderDAO {
 
     @Override
     public List<Order> getAllOrders() {
-        List<Order> user=new ArrayList<>();
+        List<Order>orders=new ArrayList<>();
         String query="Select * from orders";
         try (Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query); ResultSet resultSet=preparedStatement.executeQuery()){
-
             while (resultSet.next())
             {
-                user.add(extractOrder(resultSet));
+                orders.add(extractOrder(resultSet));
             }
-
-
         }
         catch (SQLException e)
         {
             System.out.println("Error getting user "+e.getMessage());
         }
-        return user;
-
+        return orders;
     }
 
 
     private Order extractOrder(ResultSet resultSet) throws SQLException
     {
-        return new Order(resultSet.getInt("order_id"),resultSet.getInt("user_id"),resultSet.getDouble("total_amount"),resultSet.getString("status"),resultSet.getTimestamp("order_date").toLocalDateTime());
+        return new Order(resultSet.getInt("order_id"),resultSet.getInt("user_id"),resultSet.getDouble("total_amount"),resultSet.getString("status"),resultSet.getTimestamp("order_date").toLocalDateTime(),resultSet.getString("shipping_address"));
     }
 }

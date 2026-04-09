@@ -1,6 +1,7 @@
 package app;
 
 import dao.*;
+import model.Order;
 import model.Product;
 import model.User;
 import service.CartService;
@@ -8,6 +9,7 @@ import service.OrderService;
 import service.ProductService;
 import service.UserService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main
@@ -45,7 +47,7 @@ public class Main
                             }
                             else
                             {
-                                sellerMenu(user,productService);
+                                sellerMenu(user,productService,orderDAO);
                             }
                         }
                         break;
@@ -105,7 +107,9 @@ public class Main
                 System.out.println("4. Add to Cart");
                 System.out.println("5. View Cart");
                 System.out.println("6. Place Order");
-                System.out.println("7. Logout");
+                System.out.println("7. View Order History");
+                System.out.println("8. Remove item from Cart");
+                System.out.println("9. Logout");
 
                 System.out.print("Enter choice: ");
                 int choice = sc.nextInt();
@@ -138,6 +142,24 @@ public class Main
                         orderService.checkout(user.getUserId());
                         break;
                     case 7:
+                        List<Order> orders= orderService.getUserOrders(user.getUserId());
+                        if(orders.isEmpty())
+                        {
+                            System.out.println("No orders placed yet");
+                        }
+                        else {
+                            System.out.println("**** Your Orders ****");
+                            for(Order order:orders)
+                            {
+                                System.out.println(order);
+                            }
+                        }
+                    case 8:
+                        System.out.println("Enter product id to remove");
+                        int removeid= sc.nextInt();
+                        cartService.removeFromCart(user.getUserId(),removeid);
+
+                    case 9:
                         System.out.println("Logging out !!!!");
                       return;
                     default:
@@ -146,7 +168,7 @@ public class Main
             }
 
         }
-        private static void sellerMenu(User user,ProductService productService)
+        private static void sellerMenu(User user,ProductService productService,OrderDAO orderDAO)
         {
            while (true)
            {
@@ -156,7 +178,8 @@ public class Main
                System.out.println("3. Update Product");
                System.out.println("4. Update Stock");
                System.out.println("5. Delete Product");
-               System.out.println("6. Logout");
+               System.out.println("6. View All Orders");
+               System.out.println("7. Logout");
                System.out.print("Enter choice: ");
                int choice = sc.nextInt();
                switch (choice)
@@ -235,6 +258,13 @@ public class Main
                        productService.deleteProduct(deleteId);
                        break;
                    case 6:
+
+                       List<Order> allOrders = orderDAO.getAllOrders();
+                       for (Order order : allOrders) {
+                           System.out.println(order);
+                       }
+                       break;
+                   case 7:
                        System.out.println("Logging out !!");
                        return;
                    default:

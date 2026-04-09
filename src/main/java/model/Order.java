@@ -10,17 +10,19 @@ public class Order
     private double totalAmount;
     private  String status;
     private LocalDateTime orderDate;
+    private  String shippingAddress;
     public Order()
     {
 
     };
 
-    public Order(int orderId, int userId, double totalAmount, String status, LocalDateTime orderDate) {
+    public Order(int orderId, int userId, double totalAmount, String status, LocalDateTime orderDate,String shippingAddress) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.status = status;
         this.orderDate = orderDate;
+        this.shippingAddress=shippingAddress;
     }
 
     public Order(int orderId, int userId, double total, String placed, Date date) {
@@ -66,9 +68,17 @@ public class Order
         this.orderDate = orderDate;
     }
 
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
     @Override
     public String toString()
     {
-        return "Order Details " +" Order Id "+orderId +"User Id "+userId +"Total    "+totalAmount +" Status "+status +"Date "+orderDate;
+        return "Order Details " +" Order Id "+orderId +"User Id "+userId +"Total    "+totalAmount +" Status "+status +"Date "+orderDate +"Shipping Address "+shippingAddress;
     }
 }

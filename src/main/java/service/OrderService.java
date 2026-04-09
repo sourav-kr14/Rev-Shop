@@ -8,8 +8,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 public class OrderService {
     private CartDAO cartDAO;
@@ -46,7 +46,10 @@ public class OrderService {
                 Product product = productDAO.getProductById(item.getProductId());
                 total += product.getPrice() * item.getQuantity();
             }
-            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now());
+            Scanner sc= new Scanner(System.in);
+            System.out.println("Enter Shipping Address");
+            String shipping_address =sc.nextLine();
+            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address);
             int orderId = orderDAO.placeOrder(order);
             System.out.println("DEBUG Order ID = " + orderId);
             if (orderId == -1) {
@@ -73,6 +76,7 @@ public class OrderService {
             connection.commit();
 
             System.out.println("Order placed successfully!");
+            System.out.println("Shipping Address    "+shipping_address);
         } catch (SQLException e) {
             try{
                 if(connection !=null) connection.rollback();
