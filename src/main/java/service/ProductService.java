@@ -12,9 +12,9 @@ public class ProductService
     {
         this.productDAO=productDAO;
     }
-    public void addProduct(String name,String description,double price,double mrp,String category,int stock,int sellerId)
+    public void addProduct(String name,String description,double price,double mrp,String category,int stock,int sellerId,int threshold_stock)
     {
-        Product product= new Product(0,name,description,price,mrp,category,stock,sellerId);
+        Product product= new Product(0,name,description,price,mrp,category,stock,sellerId,threshold_stock);
         productDAO.addProduct(product);
 
 //        System.out.println("Product added successfully");

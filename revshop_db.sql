@@ -82,6 +82,7 @@ foreign key(product_id) references products(product_id)
 
 select * from reviews;
 
+alter table products add threshold_stock int default 10;
 
 
 CREATE TABLE favor (

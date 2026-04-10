@@ -10,11 +10,12 @@ public class Product
     private String category;
     private int stock;
     private int sellerId;
+    private int threshold;
     public  Product(){};
 
     public Product(int productId, String name, String description,
                    double price, double mrp, String category,
-                   int stock, int sellerId) {
+                   int stock, int sellerId,int threshold) {
 
         this.productId = productId;
         this.name = name;
@@ -24,6 +25,7 @@ public class Product
         this.category = category;
         this.stock = stock;
         this.sellerId = sellerId;
+        this.threshold=threshold;
     }
 
     public int getProductId() {
@@ -90,6 +92,14 @@ public class Product
         this.name = name;
     }
 
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -99,7 +109,7 @@ public class Product
                 ", MRP=" + mrp +
                 ", category='" + category + '\'' +
                 ", stock=" + stock +
-                ", sellerId=" + sellerId +
+                ", sellerId=" + sellerId + "Threshold:  "+threshold+
                 '}';
     }
 }

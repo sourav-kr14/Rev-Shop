@@ -261,7 +261,8 @@ public class Main
                System.out.println("6. View All Orders");
                System.out.println("7. Get Review by Product Id");
                System.out.println("8. Get  Average Rating by Product Id");
-               System.out.println("9. Logout");
+               System.out.println("9.Enter product id to check stock");
+               System.out.println("10. Logout");
                System.out.print("Enter choice: ");
                int choice = sc.nextInt();
                switch (choice)
@@ -284,7 +285,9 @@ public class Main
                        String category=sc.next();
                        System.out.println("Enter stock");
                        int stock=sc.nextInt();
-                       productService.addProduct(name,desc,price,mrp,category,stock, user.getUserId());
+                       System.out.println("Enter the threshold stock");
+                       int threshold_stock=sc.nextInt();
+                       productService.addProduct(name,desc,price,mrp,category,stock, user.getUserId(),threshold_stock);
                        break;
                    case 2:
                        productService.viewAllProducts();
@@ -374,6 +377,13 @@ public class Main
                        System.out.println("Average Rating with Project Id"+p_avg +"is "+avg);
                        break;
                    case 9:
+                       System.out.println("Enter product id to check stock:");
+                       int s_id = sc.nextInt();
+                       InventoryService inventoryService = new InventoryService();
+                       inventoryService.checkStockByProductId(s_id);
+                       break;
+
+                   case 10:
                        System.out.println("Logging out !!");
                        return;
                    default:

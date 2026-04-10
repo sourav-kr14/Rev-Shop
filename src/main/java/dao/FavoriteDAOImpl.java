@@ -105,6 +105,6 @@ public class FavoriteDAOImpl implements  FavoriteDAO{
     }
     Product extractFavorite(ResultSet resultSet) throws SQLException
     {
-        return  new Product(resultSet.getInt("product_id"),resultSet.getString("name"),resultSet.getString("description"),resultSet.getDouble("price"),resultSet.getDouble("mrp"),resultSet.getString("category"),resultSet.getInt("stock"),resultSet.getInt("seller_id"));
+        return  new Product(resultSet.getInt("product_id"),resultSet.getString("name"),resultSet.getString("description"),resultSet.getDouble("price"),resultSet.getDouble("mrp"),resultSet.getString("category"),resultSet.getInt("stock"),resultSet.getInt("seller_id"),resultSet.getInt("threshold_stock"));
     }
 }

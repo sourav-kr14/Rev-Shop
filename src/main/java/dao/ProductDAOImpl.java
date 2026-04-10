@@ -11,7 +11,7 @@ public class ProductDAOImpl implements ProductDAO {
 
     @Override
     public void addProduct(Product product) {
-        String query="Insert into products (name,description,price,mrp,category,stock,seller_id) values(?,?,?,?,?,?,?)";
+        String query="Insert into products (name,description,price,mrp,category,stock,seller_id,threshold_stock) values(?,?,?,?,?,?,?,?)";
         try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             preparedStatement.setString(1,product.getName());
@@ -21,6 +21,7 @@ public class ProductDAOImpl implements ProductDAO {
             preparedStatement.setString(5,product.getCategory());
             preparedStatement.setInt(6,product.getStock());
             preparedStatement.setInt(7,product.getSellerId());
+            preparedStatement.setInt(8,product.getThreshold());
 
             int rowsInserted=preparedStatement.executeUpdate();
             if(rowsInserted>0)
@@ -186,7 +187,7 @@ public class ProductDAOImpl implements ProductDAO {
                 resultSet.getDouble("mrp"),
                 resultSet.getString("category"),
                 resultSet.getInt("stock"),
-                resultSet.getInt("seller_id")
+                resultSet.getInt("seller_id"),resultSet.getInt("threshold_stock")
         );
     }
 }
