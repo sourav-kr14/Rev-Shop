@@ -48,11 +48,34 @@ FOREIGN KEY(user_id) references users(user_id)
 CREATE TABLE order_items(
 order_item_id INT PRIMARY KEY AUTO_INCREMENT,
 order_id INT,
-product_id INT,
+product_id INT,users
 quantity INT,
 price double,
 FOREIGN KEY(order_id) references orders(order_id) on delete cascade,
  FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+ use revshop
+select * from users;
+
+select * from products;
+select *from orders;
 
 
+DESC orders;
+ALTER TABLE orders MODIFY total_amount DOUBLE;
+Alter table orders add column shipping_address varchar(200);
+Alter table orders add column payment_method varchar(200);
+
+
+
+
+-- REVIEWS
+CREATE TABLE reviews(
+review_id int auto_increment primary key,
+user_id int,product_id int,
+rating int check(rating>=1 and rating<=5),
+comment text,
+created_at timestamp default current_timestamp,
+foreign key (user_id) references users(user_id),
+foreign key(product_id) references products(product_id)
+)
