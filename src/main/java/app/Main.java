@@ -7,6 +7,7 @@ import model.Review;
 import model.User;
 import service.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,12 +22,14 @@ public class Main
         CartDAO cartDAO = new CartDAOImpl();
         OrderDAO orderDAO = new OrderDAOImpl();
         ReviewDAO reviewDAO= new ReviewDAOImpl();
+        FavoriteDAO favoriteDAO= new FavoriteDAOImpl();
 
         UserService userService = new UserService(userDAO);
         ProductService productService = new ProductService(productDAO);
         CartService cartService = new CartService(cartDAO, cartItemDAO);
         OrderService orderService = new OrderService(cartDAO, cartItemDAO, orderDAO, orderItemDAO, productDAO);
         ReviewService reviewService= new ReviewService(reviewDAO,orderDAO);
+        FavoriteService favoriteService= new FavoriteService(favoriteDAO);
 
 
         System.out.println("==== Welcome to RevShop ====");
@@ -44,11 +47,11 @@ public class Main
                         {
                             if(user.getRole().equalsIgnoreCase("buyer"))
                             {
-                                menuBuyer(user,productService,cartService,orderService,reviewService);
+                                menuBuyer(user,productService,cartService,orderService,reviewService,favoriteService);
                             }
                             else
                             {
-                                sellerMenu(user,productService,orderDAO);
+                                sellerMenu(user,productService,orderDAO,reviewService);
                             }
                         }
                         break;
@@ -97,7 +100,7 @@ public class Main
 
         return user;
         }
-        private static void menuBuyer(User user,ProductService productService,CartService cartService, OrderService orderService,ReviewService reviewService)
+        private static void menuBuyer(User user,ProductService productService,CartService cartService, OrderService orderService,ReviewService reviewService ,FavoriteService favoriteService)
         {
             while (true)
             {
@@ -113,7 +116,10 @@ public class Main
                 System.out.println("9. Add a review ");
                 System.out.println("10. Get Review by Product Id");
                 System.out.println("11. Get  Average Rating by Product Id");
-                System.out.println("12. Logout");
+                System.out.println("12. Add product to favorites");
+                System.out.println("13. Remove from favorites");
+                System.out.println("14. View Favorites");
+                System.out.println("15. Logout");
 
                 System.out.print("Enter choice: ");
                 int choice = sc.nextInt();
@@ -203,6 +209,37 @@ public class Main
                         System.out.println("Average Rating with Project Id"+p_avg +"is "+avg);
                         break;
                     case 12:
+                        System.out.println("Enter Product Id to add to favorites");
+                        int fav_product= sc.nextInt();
+                        favoriteService.addToFavorites(user.getUserId(), fav_product);
+                        break;
+                    case 13:
+                        System.out.println("Enter Product Id to remove to favorites");
+                        int rmv_product= sc.nextInt();
+                        favoriteService.removeFromFavorites(user.getUserId(), rmv_product);
+                        break;
+
+                    case 14:
+                        List<Product> favProducts=favoriteService.viewFavorites(user.getUserId());
+                        if(favProducts.isEmpty())
+                        {
+                            System.out.println("No favorite items present");
+                        }
+                        else {
+                            for(Product p: favProducts)
+                            {
+                                System.out.println("=========================");
+                                System.out.println("Product Id  "+p.getProductId());
+                                System.out.println("Name "+p.getName());
+                                System.out.println("Price  "+p.getPrice());
+                                System.out.println("=========================");
+
+                            }
+                        }
+
+
+
+                    case 15:
                         System.out.println("Logging out !!!!");
                       return;
                     default:
@@ -211,7 +248,7 @@ public class Main
             }
 
         }
-        private static void sellerMenu(User user,ProductService productService,OrderDAO orderDAO)
+        private static void sellerMenu(User user,ProductService productService,OrderDAO orderDAO,ReviewService reviewService)
         {
            while (true)
            {
@@ -222,7 +259,9 @@ public class Main
                System.out.println("4. Update Stock");
                System.out.println("5. Delete Product");
                System.out.println("6. View All Orders");
-               System.out.println("7. Logout");
+               System.out.println("7. Get Review by Product Id");
+               System.out.println("8. Get  Average Rating by Product Id");
+               System.out.println("9. Logout");
                System.out.print("Enter choice: ");
                int choice = sc.nextInt();
                switch (choice)
@@ -308,6 +347,33 @@ public class Main
                        }
                        break;
                    case 7:
+                       System.out.println("Enter product id to view rating");
+                       int p_rating=sc.nextInt();
+                       List<Review > reviews= reviewService.getReviews(p_rating);
+                       if (reviews.isEmpty())
+                       {
+                           System.out.println("Reviews not added yet ");
+                       }
+                       else
+                       {
+                           for(Review r:reviews)
+                           {
+                               System.out.println("==================");
+//                               System.out.println("User Id  "+r.getUserId());
+                               System.out.println("Rating  "+r.getRating());
+                               System.out.println("Comment  "+r.getComment());
+                               System.out.println("==================");
+
+                           }
+                       }
+                       break;
+                   case 8:
+                       System.out.println("Enter product id to view  average rating");
+                       int p_avg=sc.nextInt();
+                       double avg =reviewService.getAverageRating(p_avg);
+                       System.out.println("Average Rating with Project Id"+p_avg +"is "+avg);
+                       break;
+                   case 9:
                        System.out.println("Logging out !!");
                        return;
                    default:

@@ -79,3 +79,15 @@ created_at timestamp default current_timestamp,
 foreign key (user_id) references users(user_id),
 foreign key(product_id) references products(product_id)
 )
+
+select * from reviews;
+
+
+
+CREATE TABLE favor (
+    user_id INT,
+    product_id INT,
+    PRIMARY KEY (user_id, product_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (product_id) REFERENCES products(product_id)
+);
