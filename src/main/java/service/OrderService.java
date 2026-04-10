@@ -68,13 +68,9 @@ public class OrderService {
                 int newStock = product.getStock() - cartItem.getQuantity();
                 productDAO.updateStock(product.getProductId(), newStock);
             }
-
-
             orderItemDAO.addOrderItems(orderItems);
-
             cartItemDAO.emptyCart(cart.getCartId());
             connection.commit();
-
             System.out.println("Order placed successfully!");
             System.out.println("Shipping Address    "+shipping_address);
         } catch (SQLException e) {
@@ -83,7 +79,6 @@ public class OrderService {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
             System.out.println("Transaction unsuccessfull  " + e.getMessage());
         }
         catch (Exception e)
