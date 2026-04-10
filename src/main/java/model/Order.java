@@ -11,18 +11,20 @@ public class Order
     private  String status;
     private LocalDateTime orderDate;
     private  String shippingAddress;
+    private String paymentMethod;
     public Order()
     {
 
     };
 
-    public Order(int orderId, int userId, double totalAmount, String status, LocalDateTime orderDate,String shippingAddress) {
+    public Order(int orderId, int userId, double totalAmount, String status, LocalDateTime orderDate,String shippingAddress,String paymentMethod) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.status = status;
         this.orderDate = orderDate;
         this.shippingAddress=shippingAddress;
+        this.paymentMethod=paymentMethod;
     }
 
     public Order(int orderId, int userId, double total, String placed, Date date) {
@@ -76,9 +78,17 @@ public class Order
         this.shippingAddress = shippingAddress;
     }
 
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     @Override
     public String toString()
     {
-        return "Order Details " +" Order Id "+orderId +"User Id "+userId +"Total    "+totalAmount +" Status "+status +"Date "+orderDate +"Shipping Address "+shippingAddress;
+        return "Order Details " +" Order Id "+orderId +"User Id "+userId +"Total    "+totalAmount +" Status "+status +"Date "+orderDate +"Shipping Address "+shippingAddress + "Payment Method "+paymentMethod;
     }
 }

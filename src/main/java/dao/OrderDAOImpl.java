@@ -11,7 +11,7 @@ public class OrderDAOImpl implements  OrderDAO {
     @Override
     public int placeOrder(Order order)
     {
-        String query = "INSERT INTO orders (user_id, total_amount, status, order_date,shipping_address) VALUES (?, ?, ?, ?,?)";
+        String query = "INSERT INTO orders (user_id, total_amount, status, order_date,shipping_address,payment_method) VALUES (?, ?, ?, ?,?,?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
@@ -20,6 +20,7 @@ public class OrderDAOImpl implements  OrderDAO {
             ps.setString(3, order.getStatus());
             ps.setTimestamp(4, java.sql.Timestamp.valueOf(order.getOrderDate()));
             ps.setString(5,order.getShippingAddress());
+            ps.setString(6,order.getPaymentMethod());
 
             int rowsInserted=ps.executeUpdate();
             if(rowsInserted>0)
@@ -82,6 +83,6 @@ public class OrderDAOImpl implements  OrderDAO {
 
     private Order extractOrder(ResultSet resultSet) throws SQLException
     {
-        return new Order(resultSet.getInt("order_id"),resultSet.getInt("user_id"),resultSet.getDouble("total_amount"),resultSet.getString("status"),resultSet.getTimestamp("order_date").toLocalDateTime(),resultSet.getString("shipping_address"));
+        return new Order(resultSet.getInt("order_id"),resultSet.getInt("user_id"),resultSet.getDouble("total_amount"),resultSet.getString("status"),resultSet.getTimestamp("order_date").toLocalDateTime(),resultSet.getString("shipping_address"),resultSet.getString("payment_method"));
     }
 }

@@ -49,7 +49,35 @@ public class OrderService {
             Scanner sc= new Scanner(System.in);
             System.out.println("Enter Shipping Address");
             String shipping_address =sc.nextLine();
-            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address);
+            System.out.println("Select Payment Method");
+            System.out.println("1. UPI");
+            System.out.println("2. CARD");
+            System.out.println("3. CASH ON DELIVERY (COD) ");
+            int mode=sc.nextInt();
+            String paymentMethod;
+            switch(mode)
+            {
+                case 1: paymentMethod ="UPI";
+                break;
+                case 2: paymentMethod ="CARD";
+                    break;
+                case 3: paymentMethod ="COD";
+                    break;
+                    default:
+                        System.out.println("Invalid choice");
+                        connection.rollback();
+                        return;
+
+            }
+            PaymentService paymentService= new PaymentService();
+            boolean successPayment=paymentService.paymentProcess(userId,total,paymentMethod);
+            if(!successPayment)
+            {
+                connection.rollback();
+                System.out.println("Payment failed");
+                return;
+            }
+            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,paymentMethod);
             int orderId = orderDAO.placeOrder(order);
             System.out.println("DEBUG Order ID = " + orderId);
             if (orderId == -1) {
