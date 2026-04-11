@@ -8,4 +8,14 @@ public interface UserDAO
 
     User login(String email,String password);
 
+    boolean changePassword(String email,String oldPassword,String newPassword);
+
+    String getSecurityQuestion(String email);
+
+    String getSecurityAnswer(String email);
+
+    boolean resetPassword(String email,String newPassword);
+
+
+
 }

@@ -36,7 +36,9 @@ public class Main
         while (true) {
             System.out.println("New User? Press 1 to Register");
             System.out.println("Press 2 to Login");
-            System.out.println("Press 3 to exit");
+            System.out.println("Press 3 to Change Password");
+            System.out.println("Press 4 for Forgot Password");
+            System.out.println("Press 5 to exit");
             System.out.println("Choose Option");
             int choice = sc.nextInt();
             switch (choice) {
@@ -56,6 +58,57 @@ public class Main
                         }
                         break;
                 case 3:
+                    System.out.println("Enter your email");
+                    String email=sc.next();
+                    System.out.println("Enter your old password");
+                    String oldPassword=sc.next();
+                    System.out.println("Enter your new password");
+                    String newPassword=sc.next();
+                    boolean pass_change= userService.changePassword(email,oldPassword,newPassword);
+                    if(pass_change)
+                    {
+                        System.out.println("Password changed successfully");
+                    }
+                    else {
+                        System.out.println("Please enter correct old password");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Enter your email");
+                    String email1=sc.next();
+                    String question = userService.getSecurityQuestion(email1);
+                    if (question != null)
+                    {
+                        System.out.println(question);
+                        System.out.println("Enter your answer");
+                        String answer= sc.next();
+                        boolean isCorrect= userService.verifySecurityAnswer(email1,answer);
+                        if(isCorrect)
+                        {
+                            System.out.println("Enter new password");
+                            String newPassword1=sc.next();
+                            boolean reset= userService.resetPassword(email1,newPassword1);
+                            if(reset)
+                            {
+                                System.out.println("Your password reset is successfull");
+                            }
+                            else
+                            {
+                                System.out.println("Reset Password failed");
+                            }
+                        }
+                        else {
+                            System.out.println("Incorrect Answer");
+                        }
+
+
+                    }
+                    else {
+                        System.out.println("Email not found");
+                    }
+                    break;
+
+                case 5:
                     System.out.println("==== Exiting ====");
                     return;
                 default:
@@ -71,7 +124,11 @@ public class Main
             String password=sc.next();
             System.out.println("Enter your role (Buyer/Seller)");
             String role=sc.next().toUpperCase();
-            boolean register= userService.register(email,password,role);
+            System.out.println("Enter security question");
+            String securityQuestion=sc.next();
+            System.out.println("Enter security answer");
+            String securityAnswer=sc.next();
+            boolean register= userService.register(email,password,role,securityQuestion,securityAnswer);
             if(register)
             {
                 System.out.println("Registration done successfully");
