@@ -1,8 +1,7 @@
 import dao.FavoriteDAO;
 import dao.FavoriteDAOImpl;
 import model.Product;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.FavoriteService;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FavoriteServiceTest {
-
     private FavoriteService favoriteService;
     private FavoriteDAO favoriteDAO;
 
@@ -20,8 +18,24 @@ public class FavoriteServiceTest {
         favoriteService = new FavoriteService(favoriteDAO);
     }
 
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Favourite Service Test Suite ====");
+    }
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Favourite Service Test Suite ====");
+
+    }
+
+
 
     @Test
+    @Order(1)
+    @DisplayName("Test to add favorites")
     void testAddToFavorites() {
         int userId = 4;
         int productId = 4;
@@ -38,6 +52,8 @@ public class FavoriteServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test to add duplicate favorites")
     void testAddDuplicateFavorite() {
         int userId = 4;
         int productId = 4;
@@ -57,10 +73,11 @@ public class FavoriteServiceTest {
 
 
     @Test
+    @Order(3)
+    @DisplayName("Test to remove from favorites")
     void testRemoveFromFavorites() {
         int userId = 1;
         int productId = 1;
-
         favoriteService.addToFavorites(userId, productId);
         favoriteService.removeFromFavorites(userId, productId);
 
@@ -74,11 +91,11 @@ public class FavoriteServiceTest {
 
 
     @Test
+    @Order(4)
+    @DisplayName("Test to view favorites")
     void testViewFavorites() {
         int userId = 1;
-
         List<Product> favorites = favoriteService.viewFavorites(userId);
-
         assertNotNull(favorites);
     }
 }

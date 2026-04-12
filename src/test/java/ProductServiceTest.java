@@ -1,8 +1,7 @@
 import dao.ProductDAO;
 import dao.ProductDAOImpl;
 import model.Product;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.ProductService;
 
 import java.util.List;
@@ -20,8 +19,20 @@ public class ProductServiceTest {
         productDAO=new ProductDAOImpl();
         productService= new ProductService(productDAO);
     }
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Product Service Test Suite ====");
+    }
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Product Service Test Suite ====");
+    }
 
     @Test
+    @Order(1)
+    @DisplayName("Test to add product")
     void testAddProduct()
     {
         String name="test_product";
@@ -33,6 +44,8 @@ public class ProductServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test to update product")
     void testUpdateProduct()
     {
         List<Product> productList= productDAO.getAllProducts();
@@ -46,6 +59,8 @@ public class ProductServiceTest {
     }
 
     @Test
+    @Order(3)
+    @DisplayName("Test to update stock")
     void testUpdateStock() {
         List<Product> products = productDAO.getAllProducts();
         assertFalse(products.isEmpty());
@@ -63,6 +78,8 @@ public class ProductServiceTest {
 
 
     @Test
+    @Order(4)
+    @DisplayName("Test to delete product")
     void testDeleteProduct() {
         String unique = "DeleteProduct";
 
@@ -95,6 +112,8 @@ public class ProductServiceTest {
 
 
     @Test
+    @Order(5)
+    @DisplayName("Test to search product")
     void testSearchProducts() {
         String unique = "SearchProduct";
 

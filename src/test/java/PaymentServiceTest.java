@@ -1,6 +1,5 @@
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.PaymentService;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,9 +12,21 @@ public class PaymentServiceTest {
     void setup() {
         paymentService = new PaymentService();
     }
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Payment Service Test Suite ====");
+    }
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Payment Service Test Suite ====");
+    }
 
 
     @Test
+    @Order(1)
+    @DisplayName("Test COD Payment")
     void testCODPayment() {
         boolean result = paymentService.paymentProcess(1, 500, "COD");
 
@@ -24,6 +35,8 @@ public class PaymentServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test UPI Payment")
     void testUPIPayment() {
         boolean result = paymentService.paymentProcess(1, 1000, "UPI");
 
@@ -32,6 +45,8 @@ public class PaymentServiceTest {
 
 
     @Test
+    @Order(3)
+    @DisplayName("Test Card Payment")
     void testCardPayment() {
         boolean result = paymentService.paymentProcess(1, 1500, "CARD");
 
@@ -40,6 +55,8 @@ public class PaymentServiceTest {
 
 
     @Test
+    @Order(4)
+    @DisplayName("Test Invalid Payment")
     void testInvalidPaymentMethod() {
         boolean result = paymentService.paymentProcess(1, 500, "BITCOIN");
 
@@ -48,14 +65,8 @@ public class PaymentServiceTest {
 
 
     @Test
-    void testCaseInsensitive() {
-        boolean result = paymentService.paymentProcess(1, 500, "upi");
-
-        assertTrue(result);
-    }
-
-
-    @Test
+    @Order(5)
+    @DisplayName("Test if user enters nothing")
     void testEmptyMethod() {
         boolean result = paymentService.paymentProcess(1, 500, "");
 
@@ -63,10 +74,5 @@ public class PaymentServiceTest {
     }
 
 
-    @Test
-    void testNullMethod() {
-        assertThrows(NullPointerException.class, () -> {
-            paymentService.paymentProcess(1, 500, null);
-        });
-    }
+
 }

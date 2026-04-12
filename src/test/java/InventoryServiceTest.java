@@ -1,7 +1,6 @@
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.InventoryService;
 
 import java.io.ByteArrayOutputStream;
@@ -18,8 +17,22 @@ public class InventoryServiceTest {
         inventoryService = new InventoryService();
     }
 
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Inventory Service Test Suite ====");
+    }
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Inventory Service Test Suite ====");
+
+    }
 
     @Test
+    @Order(1)
+    @DisplayName("Test to check valid stock by product id")
     void testCheckStockValidProduct() {
         int productId = 4;
 
@@ -36,6 +49,8 @@ public class InventoryServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test to check product is not found with wrong product id ")
     void testProductNotFound() {
         int productId = 9999;
 
@@ -51,6 +66,8 @@ public class InventoryServiceTest {
 
 
     @Test
+    @Order(3)
+    @DisplayName("Test to get  low stock with product id ")
     void testLowStock() {
         int productId = 4;
 

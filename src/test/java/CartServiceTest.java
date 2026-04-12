@@ -4,8 +4,7 @@ import dao.CartItemDAO;
 import dao.CartItemDAOImpl;
 import model.Cart;
 import model.CartItem;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.CartService;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +28,24 @@ public class CartServiceTest {
     }
 
 
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Cart Service Test Suite ====");
+    }
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Cart Service Test Suite ====");
+
+    }
+
+
+
     @Test
+    @Order(1)
+    @DisplayName("Test to add new item in cart")
     void testAddToCartNewItem() {
         int userId = 5;
         int productId = 1;
@@ -49,6 +65,8 @@ public class CartServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test to update new item in cart")
     void testAddToCartUpdateQuantity() {
         int userId = 5;
         int productId = 1;
@@ -64,6 +82,8 @@ public class CartServiceTest {
 
 
     @Test
+    @Order(3)
+    @DisplayName("Test to remove new item from cart")
     void testRemoveFromCart() {
         int userId = 5;
         int productId = 2;
@@ -79,6 +99,8 @@ public class CartServiceTest {
 
 
     @Test
+    @Order(4)
+    @DisplayName("Test to remove non existing element from cart")
     void testRemoveFromNonExistingCart() {
         int userId = 9999;
         int productId = 1;
@@ -90,6 +112,8 @@ public class CartServiceTest {
 
 
     @Test
+    @Order(5)
+    @DisplayName("Test to view item in cart")
     void testViewCartWithItems() {
         int userId = 5;
         int productId = 1;
@@ -109,11 +133,11 @@ public class CartServiceTest {
 
 
     @Test
+    @Order(6)
+    @DisplayName("Test to remove existing item in cart")
     void testRemoveExistingItem() {
         int userId = 1;
         int productId = 1;
-
-        // Ensure cart exists
         int cartId;
         if (cartDAO.getCartByUserId(userId) == null) {
             cartId = cartDAO.createCart(userId);
@@ -121,14 +145,14 @@ public class CartServiceTest {
             cartId = cartDAO.getCartByUserId(userId).getCartId();
         }
 
-        // Add item first
+
         CartItem item = new CartItem(0, cartId, productId, 2);
         cartItemDAO.addCart(item);
 
-        // Remove item
+
         cartItemDAO.removeItem(cartId, productId);
 
-        // Verify deletion
+
         CartItem deleted = cartItemDAO.getCartItem(cartId, productId);
 
         assertNull(deleted);

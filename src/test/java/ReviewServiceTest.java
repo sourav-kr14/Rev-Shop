@@ -37,7 +37,7 @@ public class ReviewServiceTest {
 
     @Test
     @Order(1)
-    @DisplayName("Shoud Apply 10% Discount when amount is greater than 5000")
+    @DisplayName("Test to check the success to add review")
     void testSuccessAddReview()
     {
         int productId=4;
@@ -47,7 +47,9 @@ public class ReviewServiceTest {
         assertNotNull(reviewList);
 
     }
-@Test
+    @Test
+    @Order(2)
+    @DisplayName("Test to check review with rating 0")
     void testFailAddReview()
     {
         int productId=1;
@@ -57,6 +59,8 @@ public class ReviewServiceTest {
         assertNotNull(reviewList);
     }
     @Test
+    @Order(3)
+    @DisplayName("Test to check review with rating greater than 5")
     void testAddRatingGreaterThan5()
     {
         int productId=4;
@@ -71,6 +75,8 @@ public class ReviewServiceTest {
     }
 
     @Test
+    @Order(4)
+    @DisplayName("Test to get reviews")
     void successGetReviews()
     {
         List<Review> reviewList=reviewService.getReviews(4);
@@ -78,6 +84,8 @@ public class ReviewServiceTest {
     }
 
     @Test
+    @Order(5)
+    @DisplayName("Test to get average rating")
     void testAverageRating()
     {
         int userid=4;

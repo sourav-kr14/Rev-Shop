@@ -2,8 +2,7 @@
 
 import dao.*;
 import model.OrderItem;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.OrderService;
 
 import java.io.ByteArrayInputStream;
@@ -27,9 +26,21 @@ public class OrderServiceTest {
                 cartDAO, cartItemDAO, orderDAO, orderItemDAO, productDAO
         );
     }
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Order Service Test Suite ====");
+    }
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Order Service Test Suite ====");
+    }
 
 
     @Test
+    @Order(1)
+    @DisplayName("Test to check order placed successfully or not")
     void testCheckoutSuccess() {
 
         int userId = 1;
@@ -46,6 +57,8 @@ public class OrderServiceTest {
 
 
     @Test
+    @Order(2)
+    @DisplayName("Test to check invalid payment")
     void testCheckoutInvalidPayment() {
 
         int userId = 1;
@@ -61,6 +74,8 @@ public class OrderServiceTest {
 
 
     @Test
+    @Order(3)
+    @DisplayName("Test to check Empty Card")
     void testCheckoutEmptyCart() {
 
         int userId = 9999;
@@ -76,6 +91,8 @@ public class OrderServiceTest {
 
 
     @Test
+    @Order(4)
+    @DisplayName("Test to get order details ")
     void testGetOrderDetails() {
 
         List<OrderItem> items = orderService.getOrderDetails(1);
@@ -85,6 +102,8 @@ public class OrderServiceTest {
 
 
     @Test
+    @Order(5)
+    @DisplayName("Test to cancel order")
     void testCancelOrder() {
 
         assertDoesNotThrow(() -> {
@@ -94,6 +113,8 @@ public class OrderServiceTest {
 
 
     @Test
+    @Order(6)
+    @DisplayName("Test to get user orders by userid")
     void testGetUserOrders() {
 
         assertNotNull(orderService.getUserOrders(1));
