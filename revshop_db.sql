@@ -92,3 +92,50 @@ CREATE TABLE favor (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
+
+
+
+ALTER TABLE users 
+ADD COLUMN security_question VARCHAR(255),
+ADD COLUMN security_answer VARCHAR(255);
+
+ALTER TABLE users 
+ADD COLUMN password_hint VARCHAR(255);
+
+
+
+ALTER TABLE users 
+ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+
+
+select * from users;
+
+delete from users where user_id=2;
+
+
+
+
+ALTER TABLE favor 
+DROP FOREIGN KEY favor_ibfk_1;
+
+
+ALTER TABLE favor 
+ADD CONSTRAINT favor_ibfk_1 
+FOREIGN KEY (user_id) 
+REFERENCES users(user_id) 
+ON DELETE CASCADE;
+
+SHOW CREATE TABLE favor;
+SELECT TABLE_NAME, CONSTRAINT_NAME
+FROM information_schema.KEY_COLUMN_USAGE
+WHERE REFERENCED_TABLE_NAME = 'users';
+
+
+select * from users;
+
+delete from users where user_id=4;
+select * from products;
+delete from reviews where review_id=27;
+select * from reviews

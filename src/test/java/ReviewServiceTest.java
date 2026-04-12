@@ -67,7 +67,6 @@ public class ReviewServiceTest {
         reviewService.addReview(3,productId,9,"BestProduct");
         List<Review> reviewList= reviewService.getReviews(productId);
         assertNotNull(reviewList);
-
         boolean foundInvalid = reviewList.stream()
                 .anyMatch(r -> r.getRating() == 6);
 

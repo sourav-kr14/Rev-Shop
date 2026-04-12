@@ -13,14 +13,15 @@ public class PaymentServiceTest {
         paymentService = new PaymentService();
     }
     @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Payment Service Test Suite ====");
-    }
+
     @BeforeAll
     static void beforeAllTests()
     {
         System.out.println("==== Starting Payment Service Test Suite ====");
+    }
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Payment Service Test Suite ====");
     }
 
 

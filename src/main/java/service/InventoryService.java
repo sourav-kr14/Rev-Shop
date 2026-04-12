@@ -31,4 +31,8 @@ public class InventoryService {
             System.out.println("Stock is sufficient");
         }
     }
+
+    public Product getProductStockDetails(int productId) {
+        return productDAO.getProductById(productId);
+    }
 }

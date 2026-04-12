@@ -5,6 +5,7 @@ import dao.CartItemDAO;
 import model.Cart;
 import model.CartItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartService {
@@ -51,11 +52,17 @@ public class CartService {
         for(CartItem item:items)
         {
             System.out.println("Product id: "+item.getProductId()  + "====" + "Quantity:    "+item.getQuantity());
-
         }
-
-
 	}
+
+
+    public List<CartItem> getCartItemsByUserId(int userId) {
+        Cart cart = cartDAO.getCartByUserId(userId);
+        if (cart == null) {
+            return new ArrayList<>();
+        }
+        return cartItemDAO.getCartItems(cart.getCartId());
+    }
 
     public void removeFromCart(int userId,int productId)
     {

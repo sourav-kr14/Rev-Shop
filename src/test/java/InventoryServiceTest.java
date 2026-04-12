@@ -1,5 +1,6 @@
 
 
+import model.Product;
 import org.junit.jupiter.api.*;
 import service.InventoryService;
 
@@ -36,15 +37,13 @@ public class InventoryServiceTest {
     void testCheckStockValidProduct() {
         int productId = 4;
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(out));
+        Product product = inventoryService.getProductStockDetails(productId);
 
-        inventoryService.checkStockByProductId(productId);
+        assertNotNull(product);
+        assertEquals(productId, product.getProductId());
 
-        String output = out.toString();
-
-        assertTrue(output.contains("Product:"));
-        assertTrue(output.contains("Current Stock:"));
+        assertTrue(product.getStock() >= 0);
+        assertTrue(product.getThreshold() >= 0);
     }
 
 

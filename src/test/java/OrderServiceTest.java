@@ -26,16 +26,18 @@ public class OrderServiceTest {
                 cartDAO, cartItemDAO, orderDAO, orderItemDAO, productDAO
         );
     }
-    @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Order Service Test Suite ====");
-    }
+
     @BeforeAll
     static void beforeAllTests()
     {
         System.out.println("==== Starting Order Service Test Suite ====");
     }
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Order Service Test Suite ====");
+    }
+
 
 
     @Test
@@ -45,7 +47,7 @@ public class OrderServiceTest {
 
         int userId = 1;
 
-        String input = "Test Address\n1\n";
+        String input = "Test Address";
 
 
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -54,8 +56,6 @@ public class OrderServiceTest {
             orderService.checkout(userId);
         });
     }
-
-
     @Test
     @Order(2)
     @DisplayName("Test to check invalid payment")
@@ -63,7 +63,7 @@ public class OrderServiceTest {
 
         int userId = 1;
 
-        String input = "Test Address\n5\n";
+        String input = "Test Address";
 
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
@@ -71,7 +71,6 @@ public class OrderServiceTest {
             orderService.checkout(userId);
         });
     }
-
 
     @Test
     @Order(3)

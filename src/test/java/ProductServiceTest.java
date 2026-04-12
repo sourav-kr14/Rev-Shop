@@ -19,15 +19,16 @@ public class ProductServiceTest {
         productDAO=new ProductDAOImpl();
         productService= new ProductService(productDAO);
     }
-    @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Product Service Test Suite ====");
-    }
+
     @BeforeAll
     static void beforeAllTests()
     {
         System.out.println("==== Starting Product Service Test Suite ====");
+    }
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Product Service Test Suite ====");
     }
 
     @Test
@@ -50,7 +51,6 @@ public class ProductServiceTest {
     {
         List<Product> productList= productDAO.getAllProducts();
         assertFalse(productList.isEmpty());
-
         Product product= productList.get(0);
         product.setName("New_Name");
         productService.updateProduct(product);
@@ -64,15 +64,10 @@ public class ProductServiceTest {
     void testUpdateStock() {
         List<Product> products = productDAO.getAllProducts();
         assertFalse(products.isEmpty());
-
         Product product = products.get(0);
-
         int newStock = product.getStock() + 5;
-
         productService.updateStock(product.getProductId(), newStock);
-
         Product updated = productDAO.getProductById(product.getProductId());
-
         assertEquals(newStock, updated.getStock());
     }
 
@@ -83,16 +78,7 @@ public class ProductServiceTest {
     void testDeleteProduct() {
         String unique = "DeleteProduct";
 
-        productService.addProduct(
-                unique,
-                "desc",
-                100,
-                120,
-                "category",
-                5,
-                1,
-                2
-        );
+        productService.addProduct(unique, "desc", 100, 120, "category", 5, 1, 2);
 
         List<Product> products = productDAO.getAllProducts();
 
@@ -116,23 +102,10 @@ public class ProductServiceTest {
     @DisplayName("Test to search product")
     void testSearchProducts() {
         String unique = "SearchProduct";
-
-        productService.addProduct(
-                unique,
-                "desc",
-                200,
-                250,
-                "category",
-                10,
-                1,
-                2
-        );
-
+        productService.addProduct(unique, "desc", 200, 250, "category", 10, 1, 2);
         List<Product> results = productDAO.searchProducts(unique);
-
         boolean found = results.stream()
                 .anyMatch(p -> p.getName().equals(unique));
-
         assertTrue(found);
     }
 }
