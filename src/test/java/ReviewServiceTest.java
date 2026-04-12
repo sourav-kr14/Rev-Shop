@@ -3,8 +3,7 @@ import dao.OrderDAOImpl;
 import dao.ReviewDAO;
 import dao.ReviewDAOImpl;
 import model.Review;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.ReviewService;
 
 import java.util.List;
@@ -22,8 +21,23 @@ public class ReviewServiceTest {
         OrderDAO orderDAO= new OrderDAOImpl();
         reviewService= new ReviewService(reviewDAO,orderDAO);
     }
+    @BeforeAll
+    static void beforeAllTests()
+    {
+        System.out.println("==== Starting Review Service Test Suite ====");
+    }
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Review Service Test Suite ====");
+
+    }
+
 
     @Test
+    @Order(1)
+    @DisplayName("Shoud Apply 10% Discount when amount is greater than 5000")
     void testSuccessAddReview()
     {
         int productId=4;
