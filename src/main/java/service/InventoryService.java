@@ -2,6 +2,7 @@ package service;
 
 import dao.ProductDAO;
 import dao.ProductDAOImpl;
+import exception.ProductNotFoundException;
 import model.Product;
 
 public class InventoryService {
@@ -17,8 +18,8 @@ public class InventoryService {
         Product product = productDAO.getProductById(productId);
 
         if (product == null) {
-            System.out.println("Product not found");
-            return;
+        throw new ProductNotFoundException("Product not found with exception:"+productId);
+
         }
 
         System.out.println("Product: " + product.getName());
@@ -33,6 +34,11 @@ public class InventoryService {
     }
 
     public Product getProductStockDetails(int productId) {
-        return productDAO.getProductById(productId);
+        Product product= productDAO.getProductById(productId);
+        if(product == null)
+        {
+            throw new ProductNotFoundException("Product not found with id "+productId);
+        }
+        return  product;
     }
 }

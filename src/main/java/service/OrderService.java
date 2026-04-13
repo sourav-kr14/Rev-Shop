@@ -3,7 +3,6 @@ package service;
 import dao.*;
 import exception.CartEmptyException;
 import exception.OrderException;
-import exception.PaymentException;
 import model.*;
 import util.DBConnection;
 
@@ -66,7 +65,7 @@ public class OrderService {
             PaymentService paymentService = new PaymentService();
             paymentService.paymentProcess(userId, total,mode);
 
-            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,paymentMethod);
+            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,mode);
             int orderId = orderDAO.placeOrder(order);
             System.out.println("DEBUG Order ID = " + orderId);
             if (orderId == -1) {
