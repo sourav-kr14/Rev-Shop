@@ -44,10 +44,12 @@ public class ProductService
         {
             throw new ProductNotFoundException("Product unavailable");
         }
+        System.out.println("========= All products ========= ");
         for(Product p:productList)
         {
-            System.out.println("Product ID  "+p.getProductId() + "Product Name: "+p.getName()+"MRP  "+p.getMrp()+"Category: "+p.getCategory() +"Stock   "+p.getStock());
+            System.out.println("    Product ID: "+p.getProductId() + "  Product Name: "+p.getName()+"   MRP: "+p.getMrp()+" Category: "+p.getCategory() +"  Stock: "+p.getStock());
         }
+        System.out.println("=================================");
     }
 
     public Product viewProductById(int productId)
@@ -69,12 +71,38 @@ public class ProductService
     }
     public void updateProduct(Product product)
     {
-        if(product == null)
-        {
-            throw new InvalidProductException("Product cannot be null");
-        }
+        validateProduct(product);
         productDAO.updateProduct(product);
-
+    }
+    public void validateProduct(Product product)
+    {
+        if(product.getName() == null || product.getName().isEmpty())
+        {
+            throw new InvalidProductException("Product name cannot be empty");
+        }
+        if(product.getDescription() == null || product.getDescription().isEmpty())
+        {
+            throw new InvalidProductException("Product description cannot be empty");
+        }
+        if(product.getMrp() <= 0)
+        {
+            throw  new InvalidProductException("MRP must be greater than 0");
+        }
+        if(product.getPrice() <=0)
+        {
+            throw new InvalidProductException("Price must be greater than 0");
+        }
+        if(product.getStock()<0)
+        {
+            throw  new InvalidProductException("Stock cannot be negative");
+        }
+        if(product.getCategory() == null || product.getCategory().isEmpty())
+        {
+            throw new InvalidProductException("Category cannot be negative");
+        }
+        if (product.getPrice() > product.getMrp()) {
+            throw new IllegalArgumentException("Price cannot be greater than MRP");
+        }
     }
 
     public void updateStock(int productId,int newStock)
@@ -97,25 +125,32 @@ public class ProductService
         Product product=productDAO.getProductById(productId);
         if(product == null)
         {
-            throw new ProductNotFoundException("Unable to delete");
+            throw new ProductNotFoundException("Unable to delete product with product id"+productId);
         }
-        productDAO.deleteProduct(productId);
 
-
+        boolean deleted=productDAO.deleteProduct(productId);
+        if(!deleted)
+        {
+            throw new ProductNotFoundException("Product Not found with product id   "+productId);
+        }
     }
 
     public void searchProducts(String search)
     {
+        if(search==null || search.isEmpty())
+        {
+            throw new ProductException("Search keyword cannot be empty");
+        }
         List<Product> productList= productDAO.searchProducts(search);
         if(productList.isEmpty())
         {
-            System.out.println("No products found");
-            return;
+            throw  new ProductNotFoundException("Product not found with keyword "+search);
+
         }
         for(Product p:productList)
         {
             System.out.println("Product Found");
-            System.out.println("ProductID:   "+p.getProductId() +"Name:  "+p.getName() + "Price: "+p.getPrice());
+            System.out.println("    ProductID:   "+p.getProductId() +"  Description   "+p.getDescription() +"  Name:  "+p.getName() + "  Price: "+p.getPrice() +"   MRP:    "+p.getMrp());
         }
     }
 

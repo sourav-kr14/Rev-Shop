@@ -58,20 +58,16 @@ public class OrderService {
             System.out.println("2. CARD");
             System.out.println("3. CASH ON DELIVERY (COD) ");
             String mode=sc.nextLine().toUpperCase();
-
-
-
-
             PaymentService paymentService = new PaymentService();
-            paymentService.paymentProcess(userId, total,mode);
 
             Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,mode);
-            int orderId = orderDAO.placeOrder(order);
-            System.out.println("DEBUG Order ID = " + orderId);
+            int orderId = orderDAO.placeOrder(connection,order);
+//            System.out.println("DEBUG Order ID = " + orderId);
             if (orderId == -1) {
                 connection.rollback();
                throw new OrderException("Unable to create order");
             }
+            paymentService.paymentProcess(userId, total,mode);
             List<OrderItem> orderItems = new ArrayList<>();
             for (CartItem cartItem : cartItemList) {
                 Product product = productDAO.getProductById(cartItem.getProductId());
@@ -98,11 +94,8 @@ public class OrderService {
         }
         catch (Exception e)
         {
-           throw  new OrderException(e.getMessage());
-
+           throw  new OrderException("Failed to place order");
         }
-
-
     }
     public List<OrderItem> getOrderDetails(int orderId)
     {

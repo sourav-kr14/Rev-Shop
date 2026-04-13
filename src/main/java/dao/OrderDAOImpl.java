@@ -9,11 +9,10 @@ import java.util.List;
 
 public class OrderDAOImpl implements  OrderDAO {
     @Override
-    public int placeOrder(Order order)
+    public int placeOrder(Connection connection,Order order)
     {
         String query = "INSERT INTO orders (user_id, total_amount, status, order_date,shipping_address,payment_method) VALUES (?, ?, ?, ?,?,?)";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
+        try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS))
         {
             ps.setInt(1, order.getUserId());
             ps.setDouble(2, order.getTotalAmount());
@@ -28,8 +27,8 @@ public class OrderDAOImpl implements  OrderDAO {
                 ResultSet rs = ps.getGeneratedKeys();
                 if(rs.next())
                 {
-                    int orderId=rs.getInt(1);
-                    return orderId;
+                    return rs.getInt(1);
+
                 }
             }
         }

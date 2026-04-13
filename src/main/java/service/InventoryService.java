@@ -14,11 +14,9 @@ public class InventoryService {
 
 
     public void checkStockByProductId(int productId) {
-
         Product product = productDAO.getProductById(productId);
-
         if (product == null) {
-        throw new ProductNotFoundException("Product not found with exception:"+productId);
+        throw new ProductNotFoundException("Product not found with product id:"+productId);
 
         }
 

@@ -19,7 +19,7 @@ public class ReviewServiceTest {
     {
         ReviewDAO reviewDAO=new ReviewDAOImpl();
         OrderDAO orderDAO= new OrderDAOImpl();
-        reviewService= new ReviewService(reviewDAO,orderDAO);
+        reviewService= new ReviewService(reviewDAO,orderDAO, );
     }
     @BeforeAll
     static void beforeAllTests()

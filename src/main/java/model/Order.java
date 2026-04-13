@@ -89,6 +89,6 @@ public class Order
     @Override
     public String toString()
     {
-        return "Order Details " +" Order Id "+orderId +"User Id "+userId +"Total    "+totalAmount +" Status "+status +"Date "+orderDate +"Shipping Address "+shippingAddress + "Payment Method "+paymentMethod;
+        return "    Order Details   " +"    Order Id    "+orderId +"    User Id "+userId +"     Total    "+totalAmount +" Status "+status +"    Date    "+orderDate +"  Shipping Address "+shippingAddress + "  Payment Method "+paymentMethod;
     }
 }

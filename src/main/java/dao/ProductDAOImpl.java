@@ -3,6 +3,7 @@ package dao;
 import model.Product;
 import util.DBConnection;
 
+import java.net.URISyntaxException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +110,7 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public void deleteProduct(int id) {
+    public boolean deleteProduct(int id) {
         String sql="Delete from products where product_id=?";
         try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(sql))
         {
@@ -122,22 +123,23 @@ public class ProductDAOImpl implements ProductDAO {
             else {
                 System.out.println("Delete operation failed");
             }
+            return rows>0;
         }
         catch (SQLException e)
         {
-            System.out.println("Error while deleting product    "+e.getMessage());
+            throw new RuntimeException(e);
         }
-
     }
 
     @Override
     public List<Product> searchProducts(String keyword) {
        List<Product> search= new ArrayList<>();
-       String sql= "Select * from products where name like ? or category like ?";
+       String sql= "Select * from products where name like ? or category like ? or description like ?";
        try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(sql))
        {
            preparedStatement.setString(1,"%" +keyword +"%");
            preparedStatement.setString(2,"%"+keyword+"%");
+           preparedStatement.setString(3,"%"+keyword+"%");
            ResultSet resultSet=preparedStatement.executeQuery();
            while (resultSet.next())
            {

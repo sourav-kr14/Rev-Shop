@@ -2,11 +2,14 @@ package service;
 
 import dao.CartDAO;
 import dao.CartItemDAO;
+import dao.ProductDAO;
 import exception.CartEmptyException;
 import exception.CartItemUnavailableException;
 import exception.InvalidQuantityException;
+import exception.ProductNotFoundException;
 import model.Cart;
 import model.CartItem;
+import model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +18,23 @@ public class CartService {
 
 	private CartDAO cartDAO;
 	private CartItemDAO cartItemDAO;
+    private ProductDAO productDAO;
 
-	public CartService(CartDAO cartDAO, CartItemDAO cartItemDAO) {
+	public CartService(CartDAO cartDAO, CartItemDAO cartItemDAO,ProductDAO productDAO) {
 		this.cartDAO = cartDAO;
 		this.cartItemDAO = cartItemDAO;
+        this.productDAO=productDAO;
 	}
 
 	public void addToCart(int userId, int productId, int quantity) {
         if(quantity<=0)
         {
             throw new InvalidQuantityException("Quantity must be greater than 0");
+        }
+        Product product= productDAO.getProductById(productId);
+        if(product == null)
+        {
+            throw new ProductNotFoundException("Product not found with productId:   "+productId);
         }
 		Cart cart = cartDAO.getCartByUserId(userId);
 		if (cart == null) {
@@ -45,7 +55,7 @@ public class CartService {
 	public List<CartItem> viewCart(int userId) {
 		Cart cart = cartDAO.getCartByUserId(userId);
 		if (cart == null) {
-			throw new CartEmptyException("Cart is empty");
+			throw new CartEmptyException("Cart doesn't exist for user with user id"+userId);
 		}
 
         List<CartItem> items= cartItemDAO.getCartItems(cart.getCartId());
@@ -53,12 +63,14 @@ public class CartService {
         {
             throw new CartEmptyException("Cart is empty");
         }
+
+        System.out.println("==== Cart items =====");
+        for(CartItem item:items)
+        {
+            System.out.println("Product Id  "+item.getProductId());
+            System.out.println("Product     "+item.getQuantity());
+        }
         return items;
-//        System.out.println("==== Cart Items ====");
-//        for(CartItem item:items)
-//        {
-//            System.out.println("Product id: "+item.getProductId()  + "====" + "Quantity:    "+item.getQuantity());
-//        }
 	}
 
 

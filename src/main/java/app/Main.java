@@ -1,6 +1,7 @@
 package app;
 
 import dao.*;
+import exception.ProductNotFoundException;
 import exception.UserException;
 import model.Order;
 import model.Product;
@@ -8,7 +9,6 @@ import model.Review;
 import model.User;
 import service.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -27,10 +27,10 @@ public class Main {
 
         UserService userService = new UserService(userDAO);
         ProductService productService = new ProductService(productDAO);
-        CartService cartService = new CartService(cartDAO, cartItemDAO);
+        CartService cartService = new CartService(cartDAO, cartItemDAO,productDAO);
         OrderService orderService = new OrderService(cartDAO, cartItemDAO, orderDAO, orderItemDAO, productDAO);
-        ReviewService reviewService = new ReviewService(reviewDAO, orderDAO);
-        FavoriteService favoriteService = new FavoriteService(favoriteDAO);
+        ReviewService reviewService = new ReviewService(reviewDAO, orderDAO, productDAO);
+        FavoriteService favoriteService = new FavoriteService(favoriteDAO,productDAO);
         InventoryService inventoryService= new InventoryService();
 
 
@@ -43,6 +43,7 @@ public class Main {
                 System.out.println("Press 4 for Forgot Password");
                 System.out.println("Press 5 to exit");
                 System.out.println("Choose Option");
+                System.out.println("===========================");
                 int choice = sc.nextInt();
                 switch (choice) {
                     case 1:
@@ -150,6 +151,7 @@ public class Main {
                         break;
                     case 5:
                         viewCart(cartService, user);
+                        break;
 
                     case 6:
                         placeOrder(orderService, user);
@@ -204,7 +206,7 @@ public class Main {
                 System.out.println("6. View All Orders");
                 System.out.println("7. Get Review by Product Id");
                 System.out.println("8. Get  Average Rating by Product Id");
-                System.out.println("9.Enter product id to check stock");
+                System.out.println("9. Enter product id to check stock");
                 System.out.println("10. Logout");
                 System.out.print("Enter choice: ");
                 int choice = sc.nextInt();
@@ -218,7 +220,6 @@ public class Main {
                     case 3:
                         updateByProductID(productService);
                         break;
-
                     case 4:
                         updateStock(productService);
                         break;
@@ -302,6 +303,7 @@ public class Main {
         } catch (UserException e) {
             System.out.println(e.getMessage());
         }
+
     }
 
     private static void viewAllProducts(ProductService productService) {
@@ -316,7 +318,8 @@ public class Main {
 
     private static void searchByKeyword(ProductService productService) {
         System.out.println("Enter the keyword");
-        String keyword = sc.next();
+        sc.nextLine();
+        String keyword = sc.nextLine();
         productService.searchProducts(keyword);
     }
 
@@ -362,8 +365,8 @@ public class Main {
         sc.nextLine();
         System.out.println("Enter rating between 1 to 5");
         int rating = sc.nextInt();
-        sc.nextLine();
         System.out.println("Enter comment");
+        sc.nextLine();
         String comment = sc.nextLine();
         reviewService.addReview(user.getUserId(), pid, rating, comment);
     }
@@ -390,7 +393,7 @@ public class Main {
         System.out.println("Enter product id to view  average rating");
         int p_avg = sc.nextInt();
         double avg = reviewService.getAverageRating(p_avg);
-        System.out.println("Average Rating with Project Id" + p_avg + "is " + avg);
+        System.out.println("Average Rating with Project Id  " + p_avg + "   is " + avg);
     }
 
     private static void addToFavorites(FavoriteService favoriteService, User user) {
@@ -427,7 +430,7 @@ public class Main {
         String name = sc.next();
         System.out.println("Enter product description");
         sc.nextLine();
-        String desc = sc.next();
+        String desc = sc.nextLine();
         System.out.println("Enter product price");
         while (!sc.hasNextDouble()) {
             System.out.println("Invalid input! Enter number:");
@@ -457,7 +460,7 @@ public class Main {
             String newName = sc.next();
             System.out.println("Enter product description");
             sc.nextLine();
-            String newDesc = sc.next();
+            String newDesc = sc.nextLine();
             System.out.println("Enter product price");
             double newPrice = sc.nextDouble();
             System.out.println("Enter MRP");
@@ -494,26 +497,31 @@ public class Main {
     private static void  viewAllOrders(OrderDAO orderDAO)
     {
         List<Order> allOrders = orderDAO.getAllOrders();
+        System.out.println(" ==== Order Details ====");
         for (Order order : allOrders) {
             System.out.println(order);
         }
+        System.out.println("========================");
     }
     private static void viewRating(ReviewService reviewService)
     {
         System.out.println("Enter product id to view rating");
         int p_rating = sc.nextInt();
-        List<Review> reviews = reviewService.getReviews(p_rating);
-        if (reviews.isEmpty()) {
-            System.out.println("Reviews not added yet ");
-        } else {
-            for (Review r : reviews) {
-                System.out.println("==================");
-//                               System.out.println("User Id  "+r.getUserId());
-                System.out.println("Rating  " + r.getRating());
-                System.out.println("Comment  " + r.getComment());
-                System.out.println("==================");
-
+        try {
+            List<Review> reviews = reviewService.getReviews(p_rating);
+            if (reviews.isEmpty()) {
+                System.out.println("No reviews added yet");
+            } else {
+                for (Review r : reviews) {
+                    System.out.println("==================");
+                    System.out.println("Rating  " + r.getRating());
+                    System.out.println("Comment  " + r.getComment());
+                    System.out.println("==================");
+                }
             }
+
+        } catch (ProductNotFoundException e) {
+            System.out.println(e.getMessage());
         }
     }
     private static void checkStockById(InventoryService inventoryService)
