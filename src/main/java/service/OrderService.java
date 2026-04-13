@@ -1,6 +1,8 @@
 package service;
 
 import dao.*;
+import exception.CartEmptyException;
+import exception.OrderException;
 import exception.PaymentException;
 import model.*;
 import util.DBConnection;
@@ -34,17 +36,19 @@ public class OrderService {
             connection.setAutoCommit(false);
             Cart cart = cartDAO.getCartByUserId(userId);
             if (cart == null) {
-                System.out.println("Cart is empty");
-                return;
+               throw new CartEmptyException("Cart is empty");
             }
             List<CartItem> cartItemList = cartItemDAO.getCartItems(cart.getCartId());
             if (cartItemList.isEmpty()) {
-                System.out.println("Cart is empty");
-                return;
+               throw new CartEmptyException("Cart is empty");
             }
             double total = 0;
             for (CartItem item : cartItemList) {
                 Product product = productDAO.getProductById(item.getProductId());
+                if(product == null)
+                {
+                    throw  new OrderException("Product not found");
+                }
                 total += product.getPrice() * item.getQuantity();
             }
             Scanner sc= new Scanner(System.in);
@@ -54,38 +58,20 @@ public class OrderService {
             System.out.println("1. UPI");
             System.out.println("2. CARD");
             System.out.println("3. CASH ON DELIVERY (COD) ");
-            int mode=sc.nextInt();
-            String paymentMethod;
-            switch(mode)
-            {
-                case 1: paymentMethod ="UPI";
-                break;
-                case 2: paymentMethod ="CARD";
-                    break;
-                case 3: paymentMethod ="COD";
-                    break;
-                    default:
-                        System.out.println("Invalid choice");
-                        connection.rollback();
-                        return;
+            String mode=sc.nextLine().toUpperCase();
 
-            }
-            PaymentService paymentService= new PaymentService();
-            try {
-                paymentService.paymentProcess(userId, total, paymentMethod);
-                connection.commit();
-            } catch (PaymentException e) {
-                connection.rollback();
-                System.out.println("Payment failed: " + e.getMessage());
-                return;
-            }
+
+
+
+            PaymentService paymentService = new PaymentService();
+            paymentService.paymentProcess(userId, total,mode);
+
             Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,paymentMethod);
             int orderId = orderDAO.placeOrder(order);
             System.out.println("DEBUG Order ID = " + orderId);
             if (orderId == -1) {
                 connection.rollback();
-                System.out.println("Order failed");
-                return;
+               throw new OrderException("Unable to create order");
             }
             List<OrderItem> orderItems = new ArrayList<>();
             for (CartItem cartItem : cartItemList) {
@@ -113,7 +99,7 @@ public class OrderService {
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+           throw  new OrderException(e.getMessage());
 
         }
 
