@@ -18,7 +18,7 @@ public class UserService {
         User existing=userDAO.login(email,password);
         if(existing != null)
         {
-            throw  new UserAlreadyExists("User already exists with email :"+email);
+            throw  new UserAlreadyExistsException("User already exists with email :"+email);
         }
         User user= new User(0,email,password,role,securityQuestion,securityAnswer);
         boolean success= userDAO.register(user);
@@ -33,7 +33,7 @@ public class UserService {
         User user= userDAO.login(email, password);
         if(user == null)
         {
-            throw new InvalidCredentials("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
         return user;
     }
@@ -61,20 +61,21 @@ public class UserService {
         String question= userDAO.getSecurityQuestion(email);
         if(question == null)
         {
-            throw new UserNotFound("User doesn't exist with email   "+email);
+            throw new UserNotFoundException("User doesn't exist with email   "+email);
         }
+        return question;
     }
     public boolean verifySecurityAnswer(String email,String answer)
     {
         String dbAnswer=userDAO.getSecurityAnswer(email);
         if(dbAnswer== null)
         {
-            throw new UserNotFound("User not found with email:"+email);
+            throw new UserNotFoundException("User not found with email:"+email);
         }
 
        if(!dbAnswer.equalsIgnoreCase(answer.trim()))
        {
-           throw new InvalidSecurityAnswer("Incorrect Security Answer");
+           throw new InvalidSecurityAnswerException("Incorrect Security Answer");
        }
        return true;
     }
@@ -85,7 +86,7 @@ public class UserService {
         boolean success= userDAO.resetPassword(email, newPassword);
         if(!success)
         {
-            throw new UserNotFound("Password failed to reset");
+            throw new UserNotFoundException("Password failed to reset");
         }
         return true;
     }

@@ -13,7 +13,7 @@ import java.util.List;
 public class ReviewDAOImpl implements  ReviewDAO{
 
     @Override
-    public void addReview(Review review) {
+    public boolean addReview(Review review) {
         String query="Insert into reviews(user_id,product_id,rating,comment) values(?,?,?,?)";
         try(Connection connection = DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
@@ -35,6 +35,7 @@ public class ReviewDAOImpl implements  ReviewDAO{
         {
             System.out.println("Error while adding review");
         }
+        return true;
     }
 
     @Override

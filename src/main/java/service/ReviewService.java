@@ -2,6 +2,8 @@ package service;
 
 import dao.OrderDAO;
 import dao.ReviewDAO;
+import exception.InvalidRatingException;
+import exception.ReviewException;
 import model.Review;
 
 import java.sql.Timestamp;
@@ -19,21 +21,34 @@ public class ReviewService {
     {
         if(rating <1 || rating >5)
         {
-            System.out.println("Rating must be between 1 and 5");
-            return;
+           throw new InvalidRatingException("Rating must be between 1 and 5 only");
         }
         Review review= new Review(0,userId,productId,rating , comment,new Timestamp(System.currentTimeMillis()));
-        reviewDAO.addReview(review);
+        boolean success=reviewDAO.addReview(review);
+        if(!success)
+        {
+            throw new ReviewException("Unable to add review");
+        }
     }
 
 
     public List<Review> getReviews(int productId)
     {
-        return reviewDAO.getReviewByProductId(productId);
+        List<Review> reviewList= reviewDAO.getReviewByProductId(productId);
+        if(reviewList == null)
+        {
+            throw  new ReviewException("Failed to get reviews with product id"+productId);
+        }
+        return reviewList;
     }
 
     public double getAverageRating(int productId)
     {
-        return reviewDAO.getAverageRating(productId);
+        double avg= reviewDAO.getAverageRating(productId);
+        if(avg<0)
+        {
+            throw new ReviewException("Invalid Average rating");
+        }
+        return avg;
     }
 }
