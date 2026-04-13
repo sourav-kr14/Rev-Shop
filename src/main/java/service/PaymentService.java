@@ -1,19 +1,25 @@
 package service;
 
+import exception.PaymentException;
+
 public class PaymentService {
     public boolean paymentProcess(int userId,double amount,String method)
     {
-        System.out.println("Processing " +method + "for Rs. "+amount);
-        if(method.equalsIgnoreCase("COD"))
-        {
-            System.out.println("Cash on Delivery Selected");
-            return true;
+
+        if(amount <=0){
+            throw new PaymentException("Invalid amount");
         }
-        if(method.equalsIgnoreCase("UPI")|| method.equalsIgnoreCase("CARD"))
+        if(method == null || method.trim().isEmpty())
         {
-            System.out.println("Payment successfull via "+method);
-            return true;
+            throw new PaymentException("Payment method cannot be empty");
         }
-        return false;
+        method=method.trim().toUpperCase();
+        switch (method)
+        {
+            case "COD":return true;
+            case "UPI":return true;
+            case "CARD":return true;
+            default:throw new PaymentException("Payment method unsupported");
+        }
     }
 }

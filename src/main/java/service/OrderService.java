@@ -1,6 +1,7 @@
 package service;
 
 import dao.*;
+import exception.PaymentException;
 import model.*;
 import util.DBConnection;
 
@@ -70,11 +71,12 @@ public class OrderService {
 
             }
             PaymentService paymentService= new PaymentService();
-            boolean successPayment=paymentService.paymentProcess(userId,total,paymentMethod);
-            if(!successPayment)
-            {
+            try {
+                paymentService.paymentProcess(userId, total, paymentMethod);
+                connection.commit();
+            } catch (PaymentException e) {
                 connection.rollback();
-                System.out.println("Payment failed");
+                System.out.println("Payment failed: " + e.getMessage());
                 return;
             }
             Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,paymentMethod);
