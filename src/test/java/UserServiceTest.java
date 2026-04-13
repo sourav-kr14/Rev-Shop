@@ -16,11 +16,7 @@ public class UserServiceTest {
         UserDAO userDAO= new UserDAOImpl();
         userService=new UserService(userDAO);
     }
-    @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished User Service Test Suite ====");
-    }
+
     @BeforeAll
     static void beforeAllTests()
     {
@@ -31,7 +27,7 @@ public class UserServiceTest {
     @Test
     @Order(1)
     @DisplayName("Test to register new User")
-    void testRegister()
+    void givenValidUserDetails_WhenUserRegister_ThenUserIsRegistered()
     {
         boolean result= userService.register("test5@gmail.com","test@123","buyer","phone","samsung");
         assertTrue(result);
@@ -39,7 +35,7 @@ public class UserServiceTest {
     @Test
     @Order(2)
     @DisplayName("Test to login")
-    void testLogin()
+    void givenCorrectInfo_WhenUserLogin_ThenUserLoginSuccess()
     {
         userService.register("test3@gmail.com","test@123","buyer","phone","samsung");
         User user= userService.login("test3@gmail.com","test@123");
@@ -51,7 +47,7 @@ public class UserServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test to check wrong password")
-    void testWrongPassword()
+    void givenWrongPassword_WhenUseLogin_ThenUserLoginFail()
     {
         User user= userService.login("test@gmail.com","test@111");
         assertNull(user);
@@ -59,7 +55,7 @@ public class UserServiceTest {
     @Test
     @Order(4)
     @DisplayName("Test to change password")
-    void testChangePassword()
+    void givenCorrectInfo_WhenUserChangePassword_ThenPasswordChangeSuccess()
     {
         userService.register("test4@gmail.com","test@123","buyer","phone","samsung");
         boolean result= userService.changePassword("test4@gmail.com","test@123","test@111");
@@ -69,7 +65,7 @@ public class UserServiceTest {
     @Test
     @Order(5)
     @DisplayName("Test to change with wrong old password")
-    void testChangeWrongPassword()
+    void givenWrongOldPassword_WhenUserChangePassword_ThenPasswordChangeFailure()
     {
         userService.register("test@gmail.com","test@123","buyer","phone","samsung");
         boolean result= userService.changePassword("test@gmail.com","test@999","test@111");
@@ -78,7 +74,7 @@ public class UserServiceTest {
     @Test
     @Order(6)
     @DisplayName("Test to get security questions")
-    void testGetSecurityQuestion()
+    void givenCorrectInfo_WhenUserLogin_ThenCorrectSecurityQuestion()
     {
         userService.register("test@gmail.com","test@123","buyer","phone","samsung");
         String question = userService.getSecurityQuestion("test@gmail.com");
@@ -87,7 +83,7 @@ public class UserServiceTest {
     @Test
     @Order(7)
     @DisplayName("Test to get security answer")
-    void testGetSecurityAnswer()
+    void givenCorrectInfo_WhenUserLogin_ThenCorrectSecurityAnswer()
     {
         userService.register("test6@gmail.com","test@123","buyer","phone","samsung");
         boolean result= userService.verifySecurityAnswer("test6@gmail.com","samsung");
@@ -96,7 +92,7 @@ public class UserServiceTest {
     @Test
     @Order(8)
     @DisplayName("Test to get wrong security answer")
-    void testGetSecurityAnswerWrong()
+    void givenWrongAnswer_WhenUserRegister_ThenThrowException()
     {
         boolean result= userService.verifySecurityAnswer("test@gmail.com","oneplus");
         assertFalse(result);
@@ -104,9 +100,15 @@ public class UserServiceTest {
     @Test
     @Order(9)
     @DisplayName("Test to reset password")
-    void testResetPassword()
+    void  givenCorrectInfo_WhenUserResetPassword_ThenPasswordChangeSuccessfull()
     {
         boolean result= userService.resetPassword("test@gmail.com","test@000");
+    }
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished User Service Test Suite ====");
     }
 
 }

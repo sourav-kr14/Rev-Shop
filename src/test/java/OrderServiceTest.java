@@ -32,39 +32,31 @@ public class OrderServiceTest {
     {
         System.out.println("==== Starting Order Service Test Suite ====");
     }
-    @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Order Service Test Suite ====");
-    }
+
 
 
 
     @Test
     @Order(1)
     @DisplayName("Test to check order placed successfully or not")
-    void testCheckoutSuccess() {
+    void givenCorrectDetails_WhenUserPlaceOrder_ThenOrderPlaceSuccess() {
 
         int userId = 1;
-
         String input = "Test Address";
-
-
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         assertDoesNotThrow(() -> {
             orderService.checkout(userId);
         });
     }
+
+
     @Test
     @Order(2)
     @DisplayName("Test to check invalid payment")
-    void testCheckoutInvalidPayment() {
-
+    void givenWrongPaymentMethod_WhenUserPlaceOrder_ThenOrderPlaceFailure() {
         int userId = 1;
-
         String input = "Test Address";
-
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         assertDoesNotThrow(() -> {
@@ -75,14 +67,10 @@ public class OrderServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test to check Empty Card")
-    void testCheckoutEmptyCart() {
-
+    void givenEmptyCard_WhenUserPlaceOrder_ThenOrderPlaceFailure() {
         int userId = 9999;
-
         String input = "Test Address\n1\n";
-
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-
         assertDoesNotThrow(() -> {
             orderService.checkout(userId);
         });
@@ -92,10 +80,8 @@ public class OrderServiceTest {
     @Test
     @Order(4)
     @DisplayName("Test to get order details ")
-    void testGetOrderDetails() {
-
+    void givenOrderId_ThenGetOrderDetailsSuccess() {
         List<OrderItem> items = orderService.getOrderDetails(1);
-
         assertNotNull(items);
     }
 
@@ -103,8 +89,7 @@ public class OrderServiceTest {
     @Test
     @Order(5)
     @DisplayName("Test to cancel order")
-    void testCancelOrder() {
-
+    void givenOrderId_ThenCancelDetailsSuccess() {
         assertDoesNotThrow(() -> {
             orderService.cancelOrder(1);
         });
@@ -114,8 +99,15 @@ public class OrderServiceTest {
     @Test
     @Order(6)
     @DisplayName("Test to get user orders by userid")
-    void testGetUserOrders() {
+    void givenUserId_ThenDisplayOrderSuccess() {
 
         assertNotNull(orderService.getUserOrders(1));
+    }
+
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Order Service Test Suite ====");
     }
 }

@@ -12,25 +12,21 @@ public class PaymentServiceTest {
     void setup() {
         paymentService = new PaymentService();
     }
-    @AfterAll
+
 
     @BeforeAll
     static void beforeAllTests()
     {
         System.out.println("==== Starting Payment Service Test Suite ====");
     }
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Payment Service Test Suite ====");
-    }
+
 
 
     @Test
     @Order(1)
     @DisplayName("Test COD Payment")
-    void testCODPayment() {
+    void givenValidCOD_WhenPaymentProcessed_ThenReturnsTrue() {
         boolean result = paymentService.paymentProcess(1, 500, "COD");
-
         assertTrue(result);
     }
 
@@ -38,7 +34,7 @@ public class PaymentServiceTest {
     @Test
     @Order(2)
     @DisplayName("Test UPI Payment")
-    void testUPIPayment() {
+    void givenValidUPI_WhenPaymentProcessed_ThenReturnsTrue() {
         boolean result = paymentService.paymentProcess(1, 1000, "UPI");
 
         assertTrue(result);
@@ -48,7 +44,7 @@ public class PaymentServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test Card Payment")
-    void testCardPayment() {
+    void givenValidCard_WhenPaymentProcessed_ThenReturnsTrue(){
         boolean result = paymentService.paymentProcess(1, 1500, "CARD");
 
         assertTrue(result);
@@ -58,7 +54,7 @@ public class PaymentServiceTest {
     @Test
     @Order(4)
     @DisplayName("Test Invalid Payment")
-    void testInvalidPaymentMethod() {
+    void givenInvalidPaymentMethod_WhenPaymentProcessed_ThenReturnsFalse() {
         boolean result = paymentService.paymentProcess(1, 500, "BITCOIN");
 
         assertFalse(result);
@@ -68,11 +64,13 @@ public class PaymentServiceTest {
     @Test
     @Order(5)
     @DisplayName("Test if user enters nothing")
-    void testEmptyMethod() {
+    void givenEmptyPaymentMethod_WhenPaymentProcessed_ThenReturnsFalse() {
         boolean result = paymentService.paymentProcess(1, 500, "");
 
         assertFalse(result);
     }
+
+
 
 
 

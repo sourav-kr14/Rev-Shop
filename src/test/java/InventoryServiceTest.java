@@ -17,31 +17,20 @@ public class InventoryServiceTest {
     void setup() {
         inventoryService = new InventoryService();
     }
-
     @BeforeAll
     static void beforeAllTests()
     {
         System.out.println("==== Starting Inventory Service Test Suite ====");
     }
 
-    @AfterAll
-    static void afterallTests()
-    {
-        System.out.println("==== Finished Inventory Service Test Suite ====");
-
-    }
-
     @Test
     @Order(1)
     @DisplayName("Test to check valid stock by product id")
-    void testCheckStockValidProduct() {
+    void givenProductId_ThenCheckValidStock() {
         int productId = 4;
-
         Product product = inventoryService.getProductStockDetails(productId);
-
         assertNotNull(product);
         assertEquals(productId, product.getProductId());
-
         assertTrue(product.getStock() >= 0);
         assertTrue(product.getThreshold() >= 0);
     }
@@ -50,7 +39,7 @@ public class InventoryServiceTest {
     @Test
     @Order(2)
     @DisplayName("Test to check product is not found with wrong product id ")
-    void testProductNotFound() {
+    void givenInvalidProductId_ThenCheckProduct() {
         int productId = 9999;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -67,7 +56,7 @@ public class InventoryServiceTest {
     @Test
     @Order(3)
     @DisplayName("Test to get  low stock with product id ")
-    void testLowStock() {
+    void givenProductId_ThenNotify_IfProductLessThanThreshold() {
         int productId = 4;
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,5 +70,13 @@ public class InventoryServiceTest {
                 output.contains("Stock is low") ||
                         output.contains("Stock is sufficient")
         );
+    }
+
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Inventory Service Test Suite ====");
+
     }
 }
