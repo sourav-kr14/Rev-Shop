@@ -66,8 +66,6 @@ public class FavoriteServiceTest {
         long count = favorites.stream()
                 .filter(p -> p.getProductId() == productId)
                 .count();
-
-
         assertTrue(count >= 1);
     }
 
@@ -88,7 +86,6 @@ public class FavoriteServiceTest {
 
         assertFalse(found);
     }
-
 
     @Test
     @Order(4)

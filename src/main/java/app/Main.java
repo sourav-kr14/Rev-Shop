@@ -294,7 +294,7 @@ public class Main
                             }
                         }
 
-
+                        break;
 
                     case 15:
                         System.out.println("Logging out !!!!");

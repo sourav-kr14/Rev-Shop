@@ -28,7 +28,6 @@ public class UserServiceTest {
     }
 
 
-
     @Test
     @Order(1)
     @DisplayName("Test to register new User")

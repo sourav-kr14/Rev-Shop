@@ -53,7 +53,6 @@ public class ReviewServiceTest {
     void testFailAddReview()
     {
         int productId=1;
-
         reviewService.addReview(3,productId,0,"BestProduct");
         List<Review> reviewList= reviewService.getReviews(productId);
         assertNotNull(reviewList);

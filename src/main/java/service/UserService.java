@@ -2,6 +2,7 @@ package service;
 
 
 import dao.UserDAO;
+import exception.*;
 import model.User;
 
 public class UserService {
@@ -14,43 +15,78 @@ public class UserService {
 
     public boolean register(String email,String password,String role,String securityQuestion,String securityAnswer)
     {
+        User existing=userDAO.login(email,password);
+        if(existing != null)
+        {
+            throw  new UserAlreadyExists("User already exists with email :"+email);
+        }
         User user= new User(0,email,password,role,securityQuestion,securityAnswer);
-        return userDAO.register(user);
+        boolean success= userDAO.register(user);
+        if(!success)
+        {
+            throw  new UserException("Failed to register new user");
+        }
+        return true;
 
     }
     public  User login(String email,String password) {
-        return userDAO.login(email, password);
+        User user= userDAO.login(email, password);
+        if(user == null)
+        {
+            throw new InvalidCredentials("Invalid email or password");
+        }
+        return user;
     }
 
     public boolean changePassword(String email,String oldPassword,String newPassword)
     {
 
         User user=userDAO.login(email,oldPassword);
-
-        if(user != null)
+        if(user == null)
         {
-            return userDAO.resetPassword(email,newPassword);
+            System.out.println("Old password is wrong");
         }
-        return false;
 
-
+       boolean success= userDAO.resetPassword(email,newPassword);
+        if(!success)
+        {
+            throw new UserException("Failed to change password");
+        }
+        return true;
     }
 
 
     public String getSecurityQuestion(String email)
     {
-        return userDAO.getSecurityQuestion(email);
+        String question= userDAO.getSecurityQuestion(email);
+        if(question == null)
+        {
+            throw new UserNotFound("User doesn't exist with email   "+email);
+        }
     }
     public boolean verifySecurityAnswer(String email,String answer)
     {
         String dbAnswer=userDAO.getSecurityAnswer(email);
+        if(dbAnswer== null)
+        {
+            throw new UserNotFound("User not found with email:"+email);
+        }
 
-        return dbAnswer != null && dbAnswer.equalsIgnoreCase(answer.trim());
+       if(!dbAnswer.equalsIgnoreCase(answer.trim()))
+       {
+           throw new InvalidSecurityAnswer("Incorrect Security Answer");
+       }
+       return true;
     }
 
 
     public boolean resetPassword(String email,String newPassword)
     {
-        return userDAO.resetPassword(email, newPassword);
+        boolean success= userDAO.resetPassword(email, newPassword);
+        if(!success)
+        {
+            throw new UserNotFound("Password failed to reset");
+        }
+        return true;
     }
 }

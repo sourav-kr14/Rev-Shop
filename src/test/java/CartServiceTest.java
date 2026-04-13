@@ -67,7 +67,6 @@ public class CartServiceTest {
 
 		Cart cart = cartDAO.getCartByUserId(userId);
 		CartItem item = cartItemDAO.getCartItem(cart.getCartId(), productId);
-
 		assertTrue(item.getQuantity() >= 3);
 	}
 

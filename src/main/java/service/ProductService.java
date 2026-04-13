@@ -32,7 +32,6 @@ public class ProductService
         for(Product p:productList)
         {
             System.out.println("Product ID  "+p.getProductId() + "Product Name: "+p.getName()+"MRP  "+p.getMrp()+"Category: "+p.getCategory() +"Stock   "+p.getStock());
-
         }
     }
 
