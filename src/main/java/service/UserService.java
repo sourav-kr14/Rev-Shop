@@ -15,6 +15,10 @@ public class UserService {
 
     public boolean register(String email,String password,String role,String securityQuestion,String securityAnswer)
     {
+        validateEmail(email);
+        validatePassword(password);
+        validateSecurityQuestions(securityQuestion);
+        validateSecurityAnswer(securityAnswer);
         User existing=userDAO.login(email,password);
         if(existing != null)
         {
@@ -30,6 +34,8 @@ public class UserService {
 
     }
     public  User login(String email,String password) {
+        validateEmail(email);
+        validatePassword(password);
         User user= userDAO.login(email, password);
         if(user == null)
         {
@@ -40,7 +46,9 @@ public class UserService {
 
     public boolean changePassword(String email,String oldPassword,String newPassword)
     {
-
+        validateEmail(email);
+        validatePassword(oldPassword);
+        validatePassword(newPassword);
         User user=userDAO.login(email,oldPassword);
         if(user == null)
         {
@@ -58,6 +66,7 @@ public class UserService {
 
     public String getSecurityQuestion(String email)
     {
+
         String question= userDAO.getSecurityQuestion(email);
         if(question == null)
         {
@@ -67,6 +76,7 @@ public class UserService {
     }
     public boolean verifySecurityAnswer(String email,String answer)
     {
+
         String dbAnswer=userDAO.getSecurityAnswer(email);
         if(dbAnswer== null)
         {
@@ -83,6 +93,8 @@ public class UserService {
 
     public boolean resetPassword(String email,String newPassword)
     {
+        validateEmail(email);
+        validateEmail(newPassword);
         boolean success= userDAO.resetPassword(email, newPassword);
         if(!success)
         {
@@ -90,4 +102,38 @@ public class UserService {
         }
         return true;
     }
+
+    public static void validateEmail(String email)
+    {
+        if(email==null || email.trim().isEmpty())
+        {
+            throw new UserException("Email cannot be empty");
+        }
+
+    }
+
+    public static void validatePassword(String password)
+    {
+        if(password==null || password.trim().isEmpty())
+        {
+            throw new UserException("Password cannot be empty");
+        }
+    }
+
+    public static void validateSecurityQuestions(String question)
+    {
+        if(question==null || question.trim().isEmpty())
+        {
+            throw new UserException("Question cannot be empty");
+        }
+    }
+
+    public static void validateSecurityAnswer(String answer)
+    {
+        if(answer==null || answer.trim().isEmpty())
+        {
+            throw new UserException("Answer cannot be empty");
+        }
+    }
+
 }
