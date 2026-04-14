@@ -120,6 +120,24 @@ public class UserServiceTest {
         assertNotNull(user);
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("Test for duplicate email")
+    void givenDuplicateEmail_WhenUserRegister_ThenFail()
+    {
+        userService.register("test0@gmail.com","test0@123","seller","questin","answer");
+        boolean result=userService.register("test0@gmail.com","test0@123","seller","questin","answer");
+        assertFalse(result);
+    }
+    @Test
+    @Order(11)
+    @DisplayName("Test if the user doesnt exist")
+    void givenNonExistingUser_WhenLogin_ThenFail()
+    {
+        User user=userService.login("anonymous@gmail.com","00000");
+        assertNull(user);
+    }
+
     @AfterAll
     static void afterallTests()
     {
