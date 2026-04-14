@@ -29,8 +29,12 @@ public class UserServiceTest {
     @DisplayName("Test to register new User")
     void givenValidUserDetails_WhenUserRegister_ThenUserIsRegistered()
     {
-        boolean result= userService.register("test5@gmail.com","test@123","buyer","phone","samsung");
+        boolean result= userService.register("test1@gmail.com","test@123","buyer","phone","samsung");
+        User user = userService.login("test1@gmail.com","test@123");
         assertTrue(result);
+        assertEquals("buyer",user.getRole());
+        assertEquals("phone",user.getSecurityQuestion());
+        assertEquals("samsung",user.getSecurityAnswer());
     }
     @Test
     @Order(2)
@@ -42,6 +46,7 @@ public class UserServiceTest {
 
         assertEquals("test3@gmail.com",user.getEmail());
         assertEquals("test@123",user.getPassword());
+        assertEquals("buyer",user.getRole());
         assertNotNull(user);
     }
     @Test
@@ -59,7 +64,9 @@ public class UserServiceTest {
     {
         userService.register("test4@gmail.com","test@123","buyer","phone","samsung");
         boolean result= userService.changePassword("test4@gmail.com","test@123","test@111");
+        User user = userService.login("test4@gmail.com", "test@111");
         assertTrue(result);
+        assertEquals("test@111",user.getPassword());
 
     }
     @Test
@@ -69,7 +76,10 @@ public class UserServiceTest {
     {
         userService.register("test@gmail.com","test@123","buyer","phone","samsung");
         boolean result= userService.changePassword("test@gmail.com","test@999","test@111");
+        User user = userService.login("test@gmail.com", "test@23");
         assertFalse(result);
+        assertNotNull(user);
+        assertEquals("test@123",user.getPassword());
     }
     @Test
     @Order(6)
@@ -79,6 +89,8 @@ public class UserServiceTest {
         userService.register("test@gmail.com","test@123","buyer","phone","samsung");
         String question = userService.getSecurityQuestion("test@gmail.com");
         assertEquals("phone",question);
+        assertNotNull(question);
+        assertFalse(question.isEmpty());
     }
     @Test
     @Order(7)
@@ -103,6 +115,9 @@ public class UserServiceTest {
     void  givenCorrectInfo_WhenUserResetPassword_ThenPasswordChangeSuccessfull()
     {
         boolean result= userService.resetPassword("test@gmail.com","test@000");
+        assertTrue(result);
+        User user = userService.login("test@gmail.com","test@000");
+        assertNotNull(user);
     }
 
     @AfterAll
