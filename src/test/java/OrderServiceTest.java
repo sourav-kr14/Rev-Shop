@@ -10,9 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Nested
 class OrderServiceTest {
-
     private OrderService orderService;
 
     @BeforeEach
@@ -29,8 +27,7 @@ class OrderServiceTest {
     }
 
     @BeforeAll
-    static void beforeAllTests()
-    {
+    static void beforeAllTests() {
         System.out.println("==== Starting Order Service Test Suite ====");
     }
 
@@ -42,8 +39,8 @@ class OrderServiceTest {
         int userId = 1;
         String input = "Test Address\nCOD\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
-        orderService.checkout(1,"Address","COD");
-        List<?> orders=orderService.getUserOrders(userId);
+        orderService.checkout(1, "Address", "COD");
+        List<?> orders = orderService.getUserOrders(userId);
         assertNotNull(orders);
         assertFalse(orders.isEmpty());
     }
@@ -58,12 +55,13 @@ class OrderServiceTest {
         assertTrue(orders.isEmpty());
 
     }
+
     @Test
     @Order(3)
     @DisplayName("Test to check Empty Card")
     void givenEmptyCard_WhenUserPlaceOrder_ThenOrderPlaceFailure() {
         int userId = 20;
-        orderService.checkout(userId,"Address","COD");
+        orderService.checkout(userId, "Address", "COD");
         List<?> orders = orderService.getUserOrders(userId);
         assertTrue(orders.isEmpty());
 
@@ -76,10 +74,9 @@ class OrderServiceTest {
     void givenOrderId_ThenGetOrderDetailsSuccess() {
         List<OrderItem> items = orderService.getOrderDetails(1);
         assertNotNull(items);
-        for(OrderItem orderItem:items)
-        {
-            assertTrue(orderItem.getQuantity()>0);
-            assertTrue(orderItem.getPrice()>0);
+        for (OrderItem orderItem : items) {
+            assertTrue(orderItem.getQuantity() > 0);
+            assertTrue(orderItem.getPrice() > 0);
         }
     }
 
@@ -88,12 +85,13 @@ class OrderServiceTest {
     @Order(5)
     @DisplayName("Test to cancel order")
     void givenOrderId_ThenCancelDetailsSuccess() {
-       int userId=11;
+        int userId = 11;
         List<?> orderitems = orderService.getUserOrders(userId);
         assertTrue(orderitems.isEmpty());
 
 
     }
+
     @Test
     @Order(6)
     @DisplayName("Test to get user orders by userid")
@@ -102,23 +100,20 @@ class OrderServiceTest {
         orderService.getUserOrders(1);
         assertTrue(true);
     }
+
     @Test
     @Order(7)
     @DisplayName("Test to place multiple orders with same user id")
-    void givenMultipleCartItem_WhenUserCheckout_ThenOrderPlaced()
-    {
+    void givenMultipleCartItem_WhenUserCheckout_ThenOrderPlaced() {
 
-        orderService.checkout(1,"Address","COD");
+        orderService.checkout(1, "Address", "COD");
         List<OrderItem> items = orderService.getOrderDetails(1);
         assertTrue(items.size() > 1);
     }
 
-    }
-
 
     @AfterAll
-    static void afterallTests()
-    {
+    static void afterallTests() {
         System.out.println("==== Finished Order Service Test Suite ====");
     }
 }
