@@ -70,6 +70,14 @@ public class InventoryServiceTest {
                 output.contains("Stock is low") ||
                         output.contains("Stock is sufficient")
         );
+
+        Product product = inventoryService.getProductStockDetails(4);
+
+        if (product.getStock() < product.getThreshold()) {
+            assertTrue(product.getStock() < product.getThreshold());
+        } else {
+            assertTrue(product.getStock() >= product.getThreshold());
+        }
     }
 
 

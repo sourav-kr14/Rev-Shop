@@ -2,6 +2,7 @@ package service;
 
 import dao.*;
 import exception.CartEmptyException;
+import exception.InvalidQuantityException;
 import exception.OrderException;
 import model.*;
 import util.DBConnection;
@@ -10,8 +11,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 
 public class OrderService {
     private CartDAO cartDAO;
@@ -28,73 +30,148 @@ public class OrderService {
         this.productDAO = productDAO;
     }
 
-    public void checkout(int userId) {
-        Connection connection=null;
-        try  {
-            connection=DBConnection.getConnection();
-            connection.setAutoCommit(false);
-            Cart cart = cartDAO.getCartByUserId(userId);
-            if (cart == null) {
-               throw new CartEmptyException("Cart is empty");
-            }
-            List<CartItem> cartItemList = cartItemDAO.getCartItems(cart.getCartId());
-            if (cartItemList.isEmpty()) {
-               throw new CartEmptyException("Cart is empty");
-            }
-            double total = 0;
-            for (CartItem item : cartItemList) {
-                Product product = productDAO.getProductById(item.getProductId());
-                if(product == null)
-                {
-                    throw  new OrderException("Product not found");
-                }
-                total += product.getPrice() * item.getQuantity();
-            }
-            Scanner sc= new Scanner(System.in);
-            System.out.println("Enter Shipping Address");
-            String shipping_address =sc.nextLine();
-            System.out.println("Select Payment Method");
-            System.out.println("1. UPI");
-            System.out.println("2. CARD");
-            System.out.println("3. CASH ON DELIVERY (COD) ");
-            String mode=sc.nextLine().toUpperCase();
-            PaymentService paymentService = new PaymentService();
+    public void checkout(int userId, String address, String mode) {
+        Connection connection = null;
 
-            Order order = new Order(0, userId, total, "PLACED", LocalDateTime.now(), shipping_address,mode);
-            int orderId = orderDAO.placeOrder(connection,order);
-//            System.out.println("DEBUG Order ID = " + orderId);
-            if (orderId == -1) {
-                connection.rollback();
-               throw new OrderException("Unable to create order");
-            }
-            paymentService.paymentProcess(userId, total,mode);
-            List<OrderItem> orderItems = new ArrayList<>();
-            for (CartItem cartItem : cartItemList) {
-                Product product = productDAO.getProductById(cartItem.getProductId());
-                if (product.getStock() < cartItem.getQuantity()) {
-                    throw new RuntimeException("Insufficient stock for product  " + product.getProductId());
-                }
-                OrderItem orderItem = new OrderItem(0, orderId, cartItem.getProductId(), cartItem.getQuantity(), product.getPrice());
-                orderItems.add(orderItem);
-                int newStock = product.getStock() - cartItem.getQuantity();
-                productDAO.updateStock(product.getProductId(), newStock);
-            }
-            orderItemDAO.addOrderItems(orderItems);
-            cartItemDAO.emptyCart(cart.getCartId());
+        try {
+            connection = DBConnection.getConnection();
+            connection.setAutoCommit(false);
+
+            Cart cart = validateCart(userId);
+            List<CartItem> items = getCartItems(cart);
+
+            Map<Integer, Product> productMap = validateAndFetchProducts(items);
+
+            double total = calculateTotal(items, productMap);
+
+            int orderId = createOrder(connection, userId, total, address, mode);
+
+            List<OrderItem> orderItems = createOrderItems(items, productMap, orderId);
+
+            updateStock(productMap, items);
+
+            saveOrderItems(orderItems);
+            clearCart(cart);
+
             connection.commit();
+
+            processPayment(userId, total, mode);
+
             System.out.println("Order placed successfully!");
-            System.out.println("Shipping Address    "+shipping_address);
-        } catch (SQLException e) {
-            try{
-                if(connection !=null) connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            System.out.println("Transaction unsuccessfull  " + e.getMessage());
+
+        } catch (Exception e) {
+            rollback(connection);
+            throw new OrderException("Checkout failed", e);
+        } finally {
+            closeConnection(connection);
         }
-        catch (Exception e)
-        {
-           throw  new OrderException("Failed to place order");
+    }
+    private Cart validateCart(int userId) {
+        Cart cart = cartDAO.getCartByUserId(userId);
+        if (cart == null) {
+            throw new CartEmptyException("Cart is empty");
+        }
+        return cart;
+    }
+
+    private List<CartItem> getCartItems(Cart cart) {
+        List<CartItem> items = cartItemDAO.getCartItems(cart.getCartId());
+        if (items.isEmpty()) {
+            throw new CartEmptyException("Cart is empty");
+        }
+        return items;
+    }
+
+    private Map<Integer, Product> validateAndFetchProducts(List<CartItem> items) {
+        Map<Integer, Product> productMap = new HashMap<>();
+
+        for (CartItem item : items) {
+            Product product = productDAO.getProductById(item.getProductId());
+
+            if (product == null) {
+                throw new OrderException("Product not found");
+            }
+
+            if (product.getStock() < item.getQuantity()) {
+                throw new InvalidQuantityException("Insufficient stock for product " + product.getProductId());
+            }
+
+            productMap.put(product.getProductId(), product);
+        }
+
+        return productMap;
+    }
+
+    private double calculateTotal(List<CartItem> items, Map<Integer, Product> productMap) {
+        double total = 0;
+
+        for (CartItem item : items) {
+            Product product = productMap.get(item.getProductId());
+            total += product.getPrice() * item.getQuantity();
+        }
+
+        return total;
+    }
+    private int createOrder(Connection connection, int userId, double total, String address, String mode) {
+        Order order = new Order(0, userId, total, "PLACED",
+                LocalDateTime.now(), address, mode);
+
+        int orderId = orderDAO.placeOrder(connection, order);
+
+        if (orderId == -1) {
+            throw new OrderException("Order creation failed");
+        }
+
+        return orderId;
+    }
+
+    private List<OrderItem> createOrderItems(List<CartItem> items,
+                                             Map<Integer, Product> productMap,
+                                             int orderId) {
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        for (CartItem item : items) {
+            Product product = productMap.get(item.getProductId());
+
+            orderItems.add(new OrderItem(
+                    0,
+                    orderId,
+                    item.getProductId(),
+                    item.getQuantity(),
+                    product.getPrice()
+            ));
+        }
+
+        return orderItems;
+    }
+
+    private void updateStock(Map<Integer, Product> productMap, List<CartItem> items) {
+        for (CartItem item : items) {
+            Product product = productMap.get(item.getProductId());
+
+            int newStock = product.getStock() - item.getQuantity();
+            productDAO.updateStock(product.getProductId(), newStock);
+        }
+    }
+
+    private void saveOrderItems(List<OrderItem> orderItems) {
+        orderItemDAO.addOrderItems(orderItems);
+    }
+
+    private void clearCart(Cart cart) {
+        cartItemDAO.emptyCart(cart.getCartId());
+    }
+    private void processPayment(int userId, double total, String mode) {
+        PaymentService paymentService = new PaymentService();
+        paymentService.paymentProcess(userId, total, mode);
+    }
+
+    private void closeConnection(Connection connection) {
+        try {
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
     public List<OrderItem> getOrderDetails(int orderId)
