@@ -36,7 +36,6 @@ public class PaymentServiceTest {
     @DisplayName("Test UPI Payment")
     void givenValidUPI_WhenPaymentProcessed_ThenReturnsTrue() {
         boolean result = paymentService.paymentProcess(1, 1000, "UPI");
-
         assertTrue(result);
     }
 
@@ -66,10 +65,33 @@ public class PaymentServiceTest {
     @DisplayName("Test if user enters nothing")
     void givenEmptyPaymentMethod_WhenPaymentProcessed_ThenReturnsFalse() {
         boolean result = paymentService.paymentProcess(1, 500, "");
-
         assertFalse(result);
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("Test if user enter invalid amount")
+    void givenInvalidAmount_WhenPayment_ThenFail()
+    {
+        boolean result = paymentService.paymentProcess(1, -500, "");
+        assertFalse(result);
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Test if user enters amount 0")
+    void givenZeroAmount_WhenPayment_ThenFail()
+    {
+        boolean result = paymentService.paymentProcess(1, 0, "");
+        assertFalse(result);
+    }
+
+
+    @AfterAll
+    static void afterallTests()
+    {
+        System.out.println("==== Finished Payment Service Test Suite ====");
+    }
 
 
 
