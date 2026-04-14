@@ -36,7 +36,17 @@ public class ProductServiceTest {
         productService.addProduct(name,"bestproduct",100,120,"test",10,1,5);
         List<Product> productList= productDAO.getAllProducts();
         boolean product_found=productList.stream().anyMatch(p->p.getName().equalsIgnoreCase(name));
+        Product added_test = productList.stream()
+                .filter(p -> p.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
         assertTrue(product_found);
+        assertNotNull(added_test);
+        assertEquals("test_product",added_test.getName());
+        assertEquals("best product",added_test.getDescription());
+        assertEquals(100,added_test.getPrice());
+        assertEquals(120,added_test.getMrp());
+        assertEquals(10,added_test.getStock());
     }
 
 
@@ -47,11 +57,13 @@ public class ProductServiceTest {
     {
         List<Product> productList= productDAO.getAllProducts();
         assertFalse(productList.isEmpty());
-        Product product= productList.get(0);
+        Product product= productList.getFirst();
         product.setName("New_Name");
         productService.updateProduct(product);
         Product updated=productDAO.getProductById(product.getProductId());
-        assertEquals(product.getName(),updated.getName());
+        assertEquals("New_name",updated.getName());
+        assertEquals(product.getProductId(),updated.getProductId());
+        assertNotNull(updated);
     }
 
     @Test
@@ -65,6 +77,9 @@ public class ProductServiceTest {
         productService.updateStock(product.getProductId(), newStock);
         Product updated = productDAO.getProductById(product.getProductId());
         assertEquals(newStock, updated.getStock());
+        assertNotNull(updated);
+        assertEquals(newStock,updated.getStock());
+        assertTrue(updated.getStock()>=0);
     }
 
 
@@ -77,18 +92,13 @@ public class ProductServiceTest {
         productService.addProduct(unique, "desc", 100, 120, "category", 5, 1, 2);
 
         List<Product> products = productDAO.getAllProducts();
-
         Product added = products.stream()
                 .filter(p -> p.getName().equals(unique))
                 .findFirst()
                 .orElse(null);
-
         assertNotNull(added);
-
         productService.deleteProduct(added.getProductId());
-
         Product deleted = productDAO.getProductById(added.getProductId());
-
         assertNull(deleted);
     }
 
@@ -103,8 +113,43 @@ public class ProductServiceTest {
         boolean found = results.stream()
                 .anyMatch(p -> p.getName().equals(unique));
         assertTrue(found);
+        assertFalse(results.isEmpty());
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("Test to check invalid price")
+    void givenInvalidPrice_WhenAddProduct_ThenFail()
+    {
+        assertThrows(IllegalArgumentException.class,()->
+        {
+            productService.addProduct("test_product","test_desc",-100,-120,"test",10,2,4);
+        });
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Test to check invalid stock")
+    void givenInvalidStock_WhenAddProduct_ThenFail()
+    {
+        assertThrows(IllegalArgumentException.class,()->
+        {
+            productService.addProduct("test_product","test_desc",100,120,"test",-9,2,4);
+        });
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Test to check update for invalid product")
+    void givenInvalidProduct_WhenUserUpdate_ThenFail()
+    {
+        Product product=new Product();
+        product.setProductId(-9999);
+        assertThrows(Exception.class,()->
+        {
+            productService.updateProduct(product);
+        });
+    }
     @AfterAll
     static void afterallTests()
     {
