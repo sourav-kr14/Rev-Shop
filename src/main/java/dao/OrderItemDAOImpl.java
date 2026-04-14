@@ -14,10 +14,10 @@ import java.util.List;
 public class OrderItemDAOImpl implements OrderItemDAO
 {
     @Override
-    public void addOrderItems(List<OrderItem> items) {
+    public void addOrderItems(Connection connection,List<OrderItem> items) {
 
         String query="Insert into order_items(order_id,product_id,quantity,price) values(?,?,?,?)";
-        try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
+        try( PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             for(OrderItem item:items)
             {

@@ -10,19 +10,19 @@ import util.DBConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrderService {
+
     private CartDAO cartDAO;
     private CartItemDAO cartItemDAO;
     private OrderDAO orderDAO;
     private OrderItemDAO orderItemDAO;
     private ProductDAO productDAO;
 
-    public OrderService(CartDAO cartDAO, CartItemDAO cartItemDAO, OrderDAO orderDAO, OrderItemDAO orderItemDAO, ProductDAO productDAO) {
+    public OrderService(CartDAO cartDAO, CartItemDAO cartItemDAO,
+                        OrderDAO orderDAO, OrderItemDAO orderItemDAO,
+                        ProductDAO productDAO) {
         this.cartDAO = cartDAO;
         this.cartItemDAO = cartItemDAO;
         this.orderDAO = orderDAO;
@@ -31,6 +31,7 @@ public class OrderService {
     }
 
     public void checkout(int userId, String address, String mode) {
+
         Connection connection = null;
 
         try {
@@ -48,24 +49,28 @@ public class OrderService {
 
             List<OrderItem> orderItems = createOrderItems(items, productMap, orderId);
 
-            updateStock(productMap, items);
+            updateStock(connection, productMap, items);
 
-            saveOrderItems(orderItems);
-            clearCart(cart);
+            saveOrderItems(connection, orderItems);
 
-            connection.commit();
+            clearCart(connection, cart);
+
 
             processPayment(userId, total, mode);
+
+            connection.commit();
 
             System.out.println("Order placed successfully!");
 
         } catch (Exception e) {
             rollback(connection);
-            throw new OrderException("Checkout failed", e);
+            throw new OrderException("Checkout failed: " + e.getMessage());
         } finally {
             closeConnection(connection);
         }
     }
+
+
     private Cart validateCart(int userId) {
         Cart cart = cartDAO.getCartByUserId(userId);
         if (cart == null) {
@@ -83,9 +88,11 @@ public class OrderService {
     }
 
     private Map<Integer, Product> validateAndFetchProducts(List<CartItem> items) {
+
         Map<Integer, Product> productMap = new HashMap<>();
 
         for (CartItem item : items) {
+
             Product product = productDAO.getProductById(item.getProductId());
 
             if (product == null) {
@@ -93,7 +100,9 @@ public class OrderService {
             }
 
             if (product.getStock() < item.getQuantity()) {
-                throw new InvalidQuantityException("Insufficient stock for product " + product.getProductId());
+                throw new InvalidQuantityException(
+                        "Insufficient stock for product " + product.getProductId()
+                );
             }
 
             productMap.put(product.getProductId(), product);
@@ -102,7 +111,10 @@ public class OrderService {
         return productMap;
     }
 
-    private double calculateTotal(List<CartItem> items, Map<Integer, Product> productMap) {
+
+    private double calculateTotal(List<CartItem> items,
+                                  Map<Integer, Product> productMap) {
+
         double total = 0;
 
         for (CartItem item : items) {
@@ -112,9 +124,14 @@ public class OrderService {
 
         return total;
     }
-    private int createOrder(Connection connection, int userId, double total, String address, String mode) {
-        Order order = new Order(0, userId, total, "PLACED",
-                LocalDateTime.now(), address, mode);
+
+    private int createOrder(Connection connection, int userId,
+                            double total, String address, String mode) {
+
+        Order order = new Order(
+                0, userId, total, "PLACED",
+                LocalDateTime.now(), address, mode
+        );
 
         int orderId = orderDAO.placeOrder(connection, order);
 
@@ -132,6 +149,7 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         for (CartItem item : items) {
+
             Product product = productMap.get(item.getProductId());
 
             orderItems.add(new OrderItem(
@@ -146,46 +164,71 @@ public class OrderService {
         return orderItems;
     }
 
-    private void updateStock(Map<Integer, Product> productMap, List<CartItem> items) {
+    private void updateStock(Connection connection,
+                             Map<Integer, Product> productMap,
+                             List<CartItem> items) {
+
         for (CartItem item : items) {
+
             Product product = productMap.get(item.getProductId());
 
             int newStock = product.getStock() - item.getQuantity();
-            productDAO.updateStock(product.getProductId(), newStock);
+
+            productDAO.updateStock(
+                    product.getProductId(),
+                    newStock);
         }
     }
 
-    private void saveOrderItems(List<OrderItem> orderItems) {
-        orderItemDAO.addOrderItems(orderItems);
+    private void saveOrderItems(Connection connection,
+                                List<OrderItem> orderItems) {
+
+        orderItemDAO.addOrderItems(connection, orderItems);
     }
 
-    private void clearCart(Cart cart) {
-        cartItemDAO.emptyCart(cart.getCartId());
+    private void clearCart(Connection connection, Cart cart) {
+        cartItemDAO.emptyCart(connection, cart.getCartId());
     }
+
     private void processPayment(int userId, double total, String mode) {
         PaymentService paymentService = new PaymentService();
         paymentService.paymentProcess(userId, total, mode);
     }
 
-    private void closeConnection(Connection connection) {
+
+    private void rollback(Connection connection) {
         try {
-            if (connection != null) connection.close();
+            if (connection != null) {
+                connection.rollback();
+                System.out.println("Transaction rolled back!");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    public List<OrderItem> getOrderDetails(int orderId)
-    {
+
+    private void closeConnection(Connection connection) {
+        try {
+            if (connection != null) {
+                connection.setAutoCommit(true);
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public List<OrderItem> getOrderDetails(int orderId) {
         return orderItemDAO.getOrderItemsByOrderId(orderId);
     }
 
-    public void cancelOrder(int orderId)
-    {
-        orderItemDAO.deleteOrderItemsByOrderId(orderId);
+//    public void cancelOrder(int orderId) {
+//        orderDAO.updateOrderStatus(orderId, "CANCELLED");
+//    }
 
-    }
-    public List<Order> getUserOrders(int userId)
-    {
+    public List<Order> getUserOrders(int userId) {
         return orderDAO.getOrderByUserId(userId);
     }
 }

@@ -165,14 +165,12 @@ public class ProductDAOImpl implements ProductDAO {
             int rowsUpdated=preparedStatement.executeUpdate();
             if(rowsUpdated>0)
             {
-                System.out.println("Stock Updated Successfully");
+//                System.out.println("Stock Updated Successfully");
             }
             else
             {
                 System.out.println("Unable to update product with ProductId "+productId);
             }
-
-
         }
         catch (SQLException e)
         {

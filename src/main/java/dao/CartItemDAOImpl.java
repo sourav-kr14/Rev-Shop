@@ -63,22 +63,7 @@ public class CartItemDAOImpl implements CartItemDAO {
             System.out.println("Error while inserting in cart   "+e.getMessage());
         }
     }
-//
-//    @Override
-//    public void removeItems(int cartId, int productId) {
-//        String query="Delete from cartitems where cart_id=? and product_id=? ";
-//        try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
-//        {
-//            preparedStatement.setInt(1,cartId);
-//            preparedStatement.setInt(2,productId);
-//           preparedStatement.executeUpdate();
-//
-//        }
-//        catch (SQLException e)
-//        {
-//            System.out.println("Error   "+e.getMessage());
-//        }
-//    }
+
 
     @Override
     public List<CartItem> getCartItems(int cartId) {
@@ -105,9 +90,9 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
 
     @Override
-    public void emptyCart(int cartId) {
+    public void emptyCart(Connection connection,int cartId) {
         String query="Delete from cartitems where cart_id=?  ";
-        try(Connection connection= DBConnection.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query))
+        try(PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
             preparedStatement.setInt(1,cartId);
 
@@ -141,7 +126,7 @@ public class CartItemDAOImpl implements CartItemDAO {
 
     @Override
     public void removeItem(int cartId,int productId) {
-        String query="Delete from cart_items where cart_id=? and product_id=? ";
+        String query="Delete from cartitems where cart_id=? and product_id=? ";
         try(Connection connection=DBConnection.getConnection();PreparedStatement preparedStatement=connection.prepareStatement(query))
         {
 

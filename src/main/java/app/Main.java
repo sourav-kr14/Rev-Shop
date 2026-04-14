@@ -190,6 +190,7 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            sc.nextLine();
         }
 
     }
@@ -249,6 +250,7 @@ public class Main {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            sc.nextLine();
         }
 
     }
@@ -338,7 +340,12 @@ public class Main {
     }
 
     private static void placeOrder(OrderService orderService, User user) {
-        orderService.checkout(user.getUserId());
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter delivery address");
+        String address=sc.nextLine();
+        System.out.println("Enter payment method (COD,CARD,UPI)");
+        String paymentMethod=sc.nextLine();
+        orderService.checkout(user.getUserId(),address,paymentMethod);
     }
 
     private static void viewOrderHistory(OrderService orderService, User user) {
@@ -530,12 +537,5 @@ public class Main {
         int s_id = sc.nextInt();
         inventoryService.checkStockByProductId(s_id);
     }
-
-
-
-
-
-
-
 }
 
